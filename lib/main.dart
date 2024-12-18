@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:i_med_team/LoginPage.dart';
-import 'package:i_med_team/RegionSelectionPage.dart';
-import 'package:i_med_team/RegisterPage.dart';
+import 'package:i_med_team/pages/CourseShowPage.dart';
+import 'package:i_med_team/pages/HomePage.dart';
+import 'package:i_med_team/pages/RatePage.dart';
+import 'package:i_med_team/pages/RegisterPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,18 +25,15 @@ class MyApp extends StatelessWidget {
         // and then invoke "hot reload" (save your changes or press the "hot
         // reload" button in a Flutter-supported IDE, or press "r" if you used
         // the command line to start the app).
-        //
         // Notice that the counter didn't reset back to zero; the application
         // state is not lost during the reload. To reset the state, use hot
         // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
+
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: RegisterPage(),
+      home:CourseShowPage(),
     );
   }
 }
