@@ -340,6 +340,7 @@ class _CourseShowPageState extends State<CourseShowPage> {
                 ),
               ),
             ),
+
           ],
         ),
       ),

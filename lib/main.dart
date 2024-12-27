@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:i_med_team/pages/CourseShowPage.dart';
 import 'package:i_med_team/pages/HomePage.dart';
-import 'package:i_med_team/pages/RatePage.dart';
-import 'package:i_med_team/pages/RegisterPage.dart';
+import 'package:i_med_team/pages/LoginPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final token = await getToken();
+  runApp(MyApp(
+    isLogginIn: token != null,
+  ));
+}
+
+Future<String?> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('auth_token');
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLogginIn;
+
+  const MyApp({super.key, required this.isLogginIn});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var check = getToken().toString();
+    print("TOKEN TOKEN TOKEN TOKEN TOEKN $check");
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -33,7 +45,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home:CourseShowPage(),
+      home: isLogginIn ? Homepage() : LoginPage(),
     );
   }
 }
