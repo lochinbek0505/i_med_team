@@ -12,7 +12,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 0;
 
   // List of pages to display
   final List<Widget> _pages = [
