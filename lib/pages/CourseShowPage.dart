@@ -145,7 +145,6 @@ class _CourseShowPageState extends State<CourseShowPage> {
                 ],
               ),
             ),
-
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
               child: Row(
@@ -214,10 +213,18 @@ class _CourseShowPageState extends State<CourseShowPage> {
                 ],
               ),
             ),
-            CourseInformationWidget(icon: "assets/lesson.png",text: "80 ta video dars",),
-            CourseInformationWidget(icon: "assets/video_lesson.png",text: "10 soat 25 min",),
-            CourseInformationWidget(icon: "assets/test.png",text: "50 ta test topshirig'i",),
-
+            CourseInformationWidget(
+              icon: "assets/lesson.png",
+              text: "80 ta video dars",
+            ),
+            CourseInformationWidget(
+              icon: "assets/video_lesson.png",
+              text: "10 soat 25 min",
+            ),
+            CourseInformationWidget(
+              icon: "assets/test.png",
+              text: "50 ta test topshirig'i",
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
               child: Text(
@@ -340,7 +347,6 @@ class _CourseShowPageState extends State<CourseShowPage> {
                 ),
               ),
             ),
-
           ],
         ),
       ),

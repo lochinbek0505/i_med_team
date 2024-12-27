@@ -7,6 +7,7 @@ class RegisterPage extends StatefulWidget {
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
+
 // https://oztech.uz/admin/users/user/
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController firstNameController = TextEditingController();
@@ -216,7 +217,8 @@ class _RegisterPageState extends State<RegisterPage> {
     ]
   };
   String? selectedRegion;
- // Viloyat
+
+  // Viloyat
   String? selectedDistrict;
 
   bool isLoading = false;
@@ -355,14 +357,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       items: regions.keys
                           .map((region) => DropdownMenuItem<String>(
-                        value: region,
-                        child: Text(region),
-                      ))
+                                value: region,
+                                child: Text(region),
+                              ))
                           .toList(),
                       onChanged: (value) {
                         setState(() {
                           selectedRegion = value;
-                          selectedDistrict = null; // Reset tuman when viloyat changes
+                          selectedDistrict =
+                              null; // Reset tuman when viloyat changes
                         });
                       },
                     ),
@@ -376,9 +379,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         items: regions[selectedRegion]!
                             .map((district) => DropdownMenuItem<String>(
-                          value: district,
-                          child: Text(district),
-                        ))
+                                  value: district,
+                                  child: Text(district),
+                                ))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -412,9 +415,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 50,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent),
-                        onPressed: () {
-                          // Perform registration action
+                                  backgroundColor: Colors.redAccent),
+                              onPressed: () {
+                                // Perform registration action
                                 handRegister();
                               },
                               child: Text(
@@ -422,9 +425,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 19),
                               ),
-                      ),
+                            ),
+                          ),
+                    SizedBox(
+                      height: 10,
                     ),
-                    SizedBox(height: 10,),
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -433,7 +438,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         'Hisobga kirish',
                         style: TextStyle(
                           fontSize: 18,
-
                         ),
                       ),
                     ),

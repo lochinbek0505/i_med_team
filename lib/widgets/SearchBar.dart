@@ -6,9 +6,9 @@ class SearchTextField extends StatelessWidget {
     return Card(
       color: Colors.white,
       elevation: 5,
-      margin: EdgeInsets.symmetric(vertical: 15,horizontal: 20),
+      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       child: Container(
-       height: 60,
+        height: 60,
         child: Center(
           child: TextField(
             decoration: InputDecoration(
@@ -16,7 +16,6 @@ class SearchTextField extends StatelessWidget {
               hintStyle: TextStyle(
                 color: Colors.black87,
                 fontSize: 17,
-
               ),
               prefixIcon: Image.asset(
                 'assets/ic_loupe.png',

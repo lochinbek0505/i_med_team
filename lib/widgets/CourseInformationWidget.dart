@@ -4,19 +4,16 @@ class CourseInformationWidget extends StatelessWidget {
   final String text;
   final String icon;
 
-  const CourseInformationWidget({
-    Key? key,
-    this.text = "",
-    this.icon = ""
-  }) : super(key: key);
+  const CourseInformationWidget({Key? key, this.text = "", this.icon = ""})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var size=MediaQuery.of(context).size;
+    var size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
       child: Container(
-        width: size.width ,
+        width: size.width,
         height: 70,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -45,14 +42,13 @@ class CourseInformationWidget extends StatelessWidget {
                 icon,
               ),
             ),
-            const SizedBox(width: 20 ),
+            const SizedBox(width: 20),
             // Text
             Center(
               child: Text(
                 text,
                 maxLines: 1,
                 style: const TextStyle(
-
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,

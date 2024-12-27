@@ -20,7 +20,8 @@ class ApiService {
 
   // Register API
   Future<RegisterResponse> register_request(RegisterRequest user) async {
-    final url = Uri.parse('$baseUrl/users/signup/'); // Adjust the endpoint as needed
+    final url =
+        Uri.parse('$baseUrl/users/signup/'); // Adjust the endpoint as needed
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -33,7 +34,7 @@ class ApiService {
 
       if (data['success'] == true) {
         return RegisterResponse.fromJson(data);
-      }else{
+      } else {
         return RegisterResponse.fromJson(data);
       }
     } else {
@@ -44,7 +45,8 @@ class ApiService {
 
   // Login API
   Future<LoginResponse> login_request(LoginRequest user) async {
-    final url = Uri.parse('$baseUrl/users/login/'); // Adjust the endpoint as needed
+    final url =
+        Uri.parse('$baseUrl/users/login/'); // Adjust the endpoint as needed
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -57,8 +59,7 @@ class ApiService {
 
       if (data['success'] == true) {
         return LoginResponse.fromJson(data);
-
-      }else{
+      } else {
         return LoginResponse.fromJson(data);
       }
     } else {

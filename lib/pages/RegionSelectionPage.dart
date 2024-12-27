@@ -69,7 +69,9 @@ class _RegionSelectionPageState extends State<RegionSelectionPage> {
                   });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please select both region and district')),
+                    SnackBar(
+                        content:
+                            Text('Please select both region and district')),
                   );
                 }
               },
