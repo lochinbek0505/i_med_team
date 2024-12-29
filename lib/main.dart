@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var check = getToken().toString();
-    print("TOKEN TOKEN TOKEN TOKEN TOEKN $check");
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -45,6 +44,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
+      // home: LoginPage(),
       home: isLogginIn ? Homepage() : LoginPage(),
     );
   }

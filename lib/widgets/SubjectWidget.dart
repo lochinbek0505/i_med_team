@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:i_med_team/models/subject_model.dart';
 
 class Subjectwidget extends StatelessWidget {
-  Subjectwidget({super.key, this.name});
+  Subjectwidget({super.key, required this.data});
 
-  var name;
+  Subject data;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class Subjectwidget extends StatelessWidget {
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(name),
+              child: Text(data.name),
             ),
           ),
         ),

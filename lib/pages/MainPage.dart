@@ -13,16 +13,11 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
-  final List<String> subjects = [
-    'Ona-tili',
-    'Matematika',
-    'Inglis tili',
-    'Fizika'
-  ];
   final ApiService apiService =
       ApiService('https://oztech.uz/api/v1'); // Replace with your API URL
   late Future<CoursesListModel> _itemsFuture;
 
+  late List<Data> items;
   @override
   void initState() {
     super.initState();
@@ -33,6 +28,17 @@ class _MainpageState extends State<Mainpage> {
     setState(() {
       _itemsFuture = apiService.course_list(); // Re-fetch items when refreshing
     });
+  }
+
+  void getCourses(num id) async {
+    var data = await apiService.subject_course_list(id);
+    print(data.data[0].name);
+
+    setState(() {
+      items = data.data;
+
+    });   
+
   }
 
   @override
@@ -81,14 +87,33 @@ class _MainpageState extends State<Mainpage> {
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 5.0, horizontal: 15),
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    // Make it scroll horizontally
-                    itemCount: subjects.length,
-                    itemBuilder: (context, index) {
-                      return Subjectwidget(
-                        name: subjects[index],
-                      );
+                child: FutureBuilder(
+                    future: apiService.subject_list(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData ||
+                          snapshot.data!.data.isEmpty) {
+                        return const Center(child: Text('No items found.'));
+                      } else {
+                        var subjects = snapshot.data!.data;
+                        return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            // Make it scroll horizontally
+                            itemCount: subjects.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  getCourses(subjects[index].id);
+                                },
+                                child: Subjectwidget(
+                                  data: subjects[index],
+                                ),
+                              );
+                            });
+                      }
                     }),
               ),
             ),
@@ -105,7 +130,7 @@ class _MainpageState extends State<Mainpage> {
                   } else if (!snapshot.hasData || snapshot.data!.data.isEmpty) {
                     return const Center(child: Text('No items found.'));
                   } else {
-                    final items = snapshot.data!.data;
+                    items = snapshot.data!.data;
                     print("TOEKN TOKEN TOKEN TOKEN TOKEN $items");
                     return ListView.builder(
                         scrollDirection: Axis.vertical,
@@ -136,7 +161,7 @@ class _MainpageState extends State<Mainpage> {
                                       borderRadius: BorderRadius.vertical(
                                           top: Radius.circular(16)),
                                       child: Image.network(
-                                        "https://oztech.uz${items[index].image}",
+                                        "${items[index].image}",
                                         // Replace with your image URL
                                         height: 180,
                                         width: double.infinity,

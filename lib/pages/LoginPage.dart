@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
 
@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     // var user=RegisterRequest(phone: , firstName: firstNameController.text, lastName: lastController.text, middleName: middleController.text, city: selectedRegion.toString(), town: selectedDistrict.toString(), password: passwordController.text);
     // var response=await apiService.register_request(user);
 
-    final phone = emailController.text.trim();
+    final phone = phoneController.text.trim();
     final password = passwordController.text.trim();
 
     if (phone.isEmpty || password.isEmpty) {
@@ -76,6 +76,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    super.initState();
+    phoneController.addListener(() {
+      if (!phoneController.text.startsWith("+998")) {
+        // Force the prefix "+998"
+        phoneController.text = "+998";
+        phoneController.selection = TextSelection.fromPosition(
+          TextPosition(offset: phoneController.text.length),
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
@@ -102,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
-                      controller: emailController..text = "+998",
+                      controller: phoneController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         labelText: 'Telefon raqamingiz',

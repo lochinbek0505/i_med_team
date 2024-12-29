@@ -16,7 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final TextEditingController lastController = TextEditingController();
 
-  final TextEditingController phonelController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
 
@@ -223,11 +223,25 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    phoneController.addListener(() {
+      if (!phoneController.text.startsWith("+998")) {
+        // Force the prefix "+998"
+        phoneController.text = "+998";
+        phoneController.selection = TextSelection.fromPosition(
+          TextPosition(offset: phoneController.text.length),
+        );
+      }
+    });
+  }
+
   void handRegister() async {
     // var user=RegisterRequest(phone: , firstName: firstNameController.text, lastName: lastController.text, middleName: middleController.text, city: selectedRegion.toString(), town: selectedDistrict.toString(), password: passwordController.text);
     // var response=await apiService.register_request(user);
 
-    final phone = phonelController.text.trim();
+    var phone = phoneController.text.trim();
     final first_name = firstNameController.text.trim();
     final last_name = lastController.text.trim();
     final middle_name = middleController.text.trim();
@@ -235,6 +249,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final region = selectedRegion.toString().trim();
     final district = selectedDistrict.toString().trim();
 
+    print(phone);
     if (phone.isEmpty ||
         password.isEmpty ||
         first_name.isEmpty ||
@@ -341,7 +356,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     SizedBox(height: 25),
                     TextField(
-                      controller: phonelController..text = "+998",
+                      controller: phoneController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         labelText: 'Telefon raqamingiz',
