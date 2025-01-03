@@ -117,6 +117,7 @@ class _MainpageState extends State<Mainpage> {
                     }),
               ),
             ),
+
             //courses ui
 
             Expanded(

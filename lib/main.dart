@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:i_med_team/pages/CourseShowPage.dart';
 import 'package:i_med_team/pages/HomePage.dart';
 import 'package:i_med_team/pages/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       // home: LoginPage(),
-      home: isLogginIn ? Homepage() : LoginPage(),
+      home: isLogginIn ? CourseShowPage() : LoginPage(),
     );
   }
 }
