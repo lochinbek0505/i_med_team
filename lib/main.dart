@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       // home: LoginPage(),
-      home: isLogginIn ? CourseShowPage() : LoginPage(),
+      home: isLogginIn ? Homepage() : LoginPage(),
     );
   }
 }

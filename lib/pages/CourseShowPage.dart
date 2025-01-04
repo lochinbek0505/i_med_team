@@ -5,57 +5,21 @@ import 'package:i_med_team/widgets/CourseInformationWidget.dart';
 import '../services/ApiService.dart';
 
 class CourseShowPage extends StatefulWidget {
-  const CourseShowPage({super.key});
+  final num? id;
 
+  CourseShowPage({super.key, this.id});
+
+
+  void test(){
+
+    print(id);
+
+  }
   @override
   State<CourseShowPage> createState() => _CourseShowPageState();
 }
 
 class _CourseShowPageState extends State<CourseShowPage> {
-  final List<Map<String, dynamic>> courseSections = [
-    {
-      'title': '1. Kirish (Bepul)',
-      'isExpandable': true,
-      'items': [
-        {
-          'name': 'Kurs haqida',
-          'icon': Icons.play_circle,
-          'color': Colors.green
-        },
-        {
-          'name': 'Boshlang’ich qism',
-          'icon': Icons.play_circle,
-          'color': Colors.green
-        },
-        {
-          'name': 'Fizikaga kirish',
-          'icon': Icons.play_circle,
-          'color': Colors.green
-        },
-      ],
-    },
-    {
-      'title': '2. Kinematika',
-      'isExpandable': true,
-      'items': [
-        {
-          'name': 'Kurs haqida',
-          'icon': Icons.play_circle,
-          'color': Colors.green
-        },
-        {
-          'name': 'Boshlang’ich qism',
-          'icon': Icons.play_circle,
-          'color': Colors.green
-        },
-        {
-          'name': 'Fizikaga kirish',
-          'icon': Icons.play_circle,
-          'color': Colors.green
-        },
-      ],
-    },
-  ];
   final ApiService apiService =
       ApiService('https://oztech.uz/api/v1'); // Replace with your API URL
   late Future<ShowCoursesModel> _itemsFuture;
@@ -65,13 +29,13 @@ class _CourseShowPageState extends State<CourseShowPage> {
   @override
   void initState() {
     super.initState();
-    _itemsFuture = apiService.course_detailes(1);
+    _itemsFuture = apiService.course_detailes(widget.id!);
   }
 
   Future<void> _refreshItems() async {
     setState(() {
-      _itemsFuture =
-          apiService.course_detailes(1); // Re-fetch items when refreshing
+      _itemsFuture = apiService
+          .course_detailes(widget.id!); // Re-fetch items when refreshing
     });
   }
 

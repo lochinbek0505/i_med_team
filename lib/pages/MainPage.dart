@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/courses_list_model.dart';
+import 'package:i_med_team/pages/CourseShowPage.dart';
 import 'package:i_med_team/widgets/SearchBar.dart';
 import 'package:i_med_team/widgets/SubjectWidget.dart';
 
@@ -89,7 +90,7 @@ class _MainpageState extends State<Mainpage> {
                     const EdgeInsets.symmetric(vertical: 5.0, horizontal: 15),
                 child: FutureBuilder(
                     future: apiService.subject_list(),
-                    builder: (context, snapshot) {
+                    builder: (coxntext, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
@@ -141,152 +142,164 @@ class _MainpageState extends State<Mainpage> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 20.0, horizontal: 15),
                             child: Card(
-                              child: Container(
-                                width: 340,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Top Image Section
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(16)),
-                                      child: Image.network(
-                                        "${items[index].image}",
-                                        // Replace with your image URL
-                                        height: 180,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
+                              child: GestureDetector(
+                                onTap: () {
+                                  print(items[index].id);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CourseShowPage(
+                                            id: items[index].id)),
+                                  );
+                                },
+                                child: Container(
+                                  width: 340,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 8,
+                                        offset: Offset(0, 4),
                                       ),
-                                    ),
-                                    const SizedBox(height: 8),
-
-                                    // Course Info Section
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Students and Icon Row
-                                          Row(
-                                            children: [
-                                              Icon(Icons.people,
-                                                  size: 20,
-                                                  color: Colors.black54),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                "${items[index].countStudents} ta o'quvchi",
-                                                style: TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 8),
-
-                                          // Course Title
-                                          Text(
-                                            "${items[index].name} ",
-                                            maxLines: 1,
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-
-                                          // Course Description
-                                          Text(
-                                            maxLines: 3,
-                                            items[index].description,
-                                            style: TextStyle(
-                                              color: Colors.black87,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 10),
-
-                                          // Teacher Name and Rating
-                                          Row(
-                                            children: [
-                                              Text(
-                                                "${items[index].user.firstName} ${items[index].user.lastName}",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              const Icon(Icons.star,
-                                                  color: Colors.amber,
-                                                  size: 20),
-                                              const SizedBox(width: 4),
-                                              const Text(
-                                                "4.5",
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 12),
-
-                                    // Bottom Price and Button Row
-                                    Container(
-                                      padding: const EdgeInsets.all(12.0),
-                                      decoration: const BoxDecoration(
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Top Image Section
+                                      ClipRRect(
                                         borderRadius: BorderRadius.vertical(
-                                          bottom: Radius.circular(16),
+                                            top: Radius.circular(16)),
+                                        child: Image.network(
+                                          "${items[index].image}",
+                                          // Replace with your image URL
+                                          height: 180,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "${items[index].price} so'm",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.orange,
-                                              fontSize: 18,
+                                      const SizedBox(height: 8),
+
+                                      // Course Info Section
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Students and Icon Row
+                                            Row(
+                                              children: [
+                                                Icon(Icons.people,
+                                                    size: 20,
+                                                    color: Colors.black54),
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  "${items[index].countStudents} ta o'quvchi",
+                                                  style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () {},
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.orange,
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                            const SizedBox(height: 8),
+
+                                            // Course Title
+                                            Text(
+                                              "${items[index].name} ",
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            child: const Text("Kursni olish"),
-                                          ),
-                                        ],
+                                            const SizedBox(height: 4),
+
+                                            // Course Description
+                                            Text(
+                                              maxLines: 3,
+                                              items[index].description,
+                                              style: TextStyle(
+                                                color: Colors.black87,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+
+                                            // Teacher Name and Rating
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "${items[index].user.firstName} ${items[index].user.lastName}",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                const Icon(Icons.star,
+                                                    color: Colors.amber,
+                                                    size: 20),
+                                                const SizedBox(width: 4),
+                                                const Text(
+                                                  "4.5",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+
+                                      const SizedBox(height: 12),
+
+                                      // Bottom Price and Button Row
+                                      Container(
+                                        padding: const EdgeInsets.all(12.0),
+                                        decoration: const BoxDecoration(
+                                          borderRadius: BorderRadius.vertical(
+                                            bottom: Radius.circular(16),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "${items[index].price} so'm",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.orange,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {},
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.orange,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              child: const Text("Kursni olish"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
