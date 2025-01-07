@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/show_courses_model.dart';
+import 'package:i_med_team/pages/LessonsPage.dart';
 import 'package:i_med_team/widgets/CourseInformationWidget.dart';
 
 import '../services/ApiService.dart';
@@ -292,18 +293,34 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                           if (section.isOpen && data.isOpen) {
                                             isOpen = item.isOpen;
                                           }
-                                          return ListTile(
-                                            leading: Icon(
-                                                isOpen
-                                                    ? Icons.play_circle
-                                                    : Icons.lock,
-                                                color: isOpen
-                                                    ? Colors.green
-                                                    : Colors.amber),
-                                            title: Text(
-                                              item.name,
-                                              style: TextStyle(
-                                                fontSize: 17,
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LessonsPage(
+                                                            course_id:
+                                                                widget.id!,
+                                                            modul_id:
+                                                                section.id,
+                                                            lesson_id:
+                                                                item.id)),
+                                              );
+                                            },
+                                            child: ListTile(
+                                              leading: Icon(
+                                                  isOpen
+                                                      ? Icons.play_circle
+                                                      : Icons.lock,
+                                                  color: isOpen
+                                                      ? Colors.green
+                                                      : Colors.amber),
+                                              title: Text(
+                                                item.name,
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                ),
                                               ),
                                             ),
                                           );

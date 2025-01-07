@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:i_med_team/models/courses_list_model.dart';
+import 'package:i_med_team/models/end_end.dart';
+import 'package:i_med_team/models/end_model.dart';
+import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/models/login_request.dart';
 import 'package:i_med_team/models/login_response.dart';
 import 'package:i_med_team/models/register_request.dart';
@@ -169,4 +172,57 @@ class ApiService {
     }
   }
 
+  // https://oztech.uz/api/v1/courses/1/modules/1/lessons/4/
+
+  Future<LessonModel> show_lesson(
+      num course_id, num modul_id, num lesson_id) async {
+    var token = await getToken();
+
+    final url = Uri.parse(
+        '$baseUrl/courses/$course_id/modules/$modul_id/lessons/$lesson_id/'); // Adjust the endpoint as needed
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Token $token'},
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+
+      if (data['success'] == true) {
+        return LessonModel.fromJson(data);
+      } else {
+        return LessonModel.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to get courses');
+    }
+  }
+
+  Future<EndEnd> end_lesson(EndModel end) async {
+    var token = await getToken();
+
+    final url =
+        Uri.parse('$baseUrl/courses/end/'); // Adjust the endpoint as needed
+     final response = await http.post(
+      url,
+      headers: {'Authorization': 'Token $token'},
+      body: jsonEncode(end.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+      print(EndEnd.fromJson(data));
+      if (data['success'] == true) {
+        return EndEnd.fromJson(data);
+      } else {
+        return EndEnd.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to login');
+    }
+  }
 }
