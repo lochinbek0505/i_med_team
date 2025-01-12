@@ -6,7 +6,8 @@ class Answers {
   Answers({this.value1, this.value2, this.isCorrect});
 
   Answers copyWith({String? value1, String? value2, bool? isCorrect}) =>
-      Answers(value1: value1 ?? this.value1,
+      Answers(
+          value1: value1 ?? this.value1,
           value2: value2 ?? this.value2,
           isCorrect: isCorrect ?? this.isCorrect);
 
@@ -18,7 +19,7 @@ class Answers {
     return map;
   }
 
-  Answers.fromJson(dynamic json){
+  Answers.fromJson(dynamic json) {
     value1 = json["value_1"];
     value2 = json["value_2"];
     isCorrect = json["is_correct"];
@@ -33,8 +34,9 @@ class Questions {
   Questions({this.question, this.type, this.answersList});
 
   Questions copyWith(
-      {String? question, String? type, List<Answers>? answersList}) =>
-      Questions(question: question ?? this.question,
+          {String? question, String? type, List<Answers>? answersList}) =>
+      Questions(
+          question: question ?? this.question,
           type: type ?? this.type,
           answersList: answersList ?? this.answersList);
 
@@ -48,7 +50,7 @@ class Questions {
     return map;
   }
 
-  Questions.fromJson(dynamic json){
+  Questions.fromJson(dynamic json) {
     question = json["question"];
     type = json["type"];
     if (json["answers"] != null) {
@@ -68,7 +70,8 @@ class Quiz {
   Quiz({this.id, this.name, this.questionsList});
 
   Quiz copyWith({num? id, String? name, List<Questions>? questionsList}) =>
-      Quiz(id: id ?? this.id,
+      Quiz(
+          id: id ?? this.id,
           name: name ?? this.name,
           questionsList: questionsList ?? this.questionsList);
 
@@ -82,7 +85,7 @@ class Quiz {
     return map;
   }
 
-  Quiz.fromJson(dynamic json){
+  Quiz.fromJson(dynamic json) {
     id = json["id"];
     name = json["name"];
     if (json["questions"] != null) {
@@ -104,8 +107,9 @@ class Previous {
   Previous({this.id, this.name, this.type, this.duration, this.isOpen});
 
   Previous copyWith(
-      {num? id, String? name, String? type, num? duration, bool? isOpen}) =>
-      Previous(id: id ?? this.id,
+          {num? id, String? name, String? type, num? duration, bool? isOpen}) =>
+      Previous(
+          id: id ?? this.id,
           name: name ?? this.name,
           type: type ?? this.type,
           duration: duration ?? this.duration,
@@ -121,7 +125,7 @@ class Previous {
     return map;
   }
 
-  Previous.fromJson(dynamic json){
+  Previous.fromJson(dynamic json) {
     id = json["id"];
     name = json["name"];
     type = json["type"];
@@ -130,7 +134,7 @@ class Previous {
   }
 }
 
-class Data50 {
+class Data {
   num? id;
   String? name;
   String? type;
@@ -143,12 +147,32 @@ class Data50 {
   bool? isOpen;
   String? created;
 
-  Data50(
-      {this.id, this.name, this.type, this.video, this.duration, this.resource, this.quiz, this.previous, this.next, this.isOpen, this.created});
+  Data(
+      {this.id,
+      this.name,
+      this.type,
+      this.video,
+      this.duration,
+      this.resource,
+      this.quiz,
+      this.previous,
+      this.next,
+      this.isOpen,
+      this.created});
 
-  Data50 copyWith(
-          {num? id, String? name, String? type, dynamic video, num? duration, dynamic resource, Quiz? quiz, Previous? previous, dynamic next, bool? isOpen, String? created}) =>
-      Data50(
+  Data copyWith(
+          {num? id,
+          String? name,
+          String? type,
+          dynamic video,
+          num? duration,
+          dynamic resource,
+          Quiz? quiz,
+          Previous? previous,
+          dynamic next,
+          bool? isOpen,
+          String? created}) =>
+      Data(
           id: id ?? this.id,
           name: name ?? this.name,
           type: type ?? this.type,
@@ -181,7 +205,7 @@ class Data50 {
     return map;
   }
 
-  Data50.fromJson(dynamic json) {
+  Data.fromJson(dynamic json) {
     id = json["id"];
     name = json["name"];
     type = json["type"];
@@ -190,24 +214,24 @@ class Data50 {
     resource = json["resource"];
     quiz = json["quiz"] != null ? Quiz.fromJson(json["quiz"]) : null;
     previous =
-    json["previous"] != null ? Previous.fromJson(json["previous"]) : null;
+        json["previous"] != null ? Previous.fromJson(json["previous"]) : null;
     next = json["next"];
     isOpen = json["is_open"];
     created = json["created"];
   }
 }
 
-class LessonModel {
+class QuizModel {
   String? status;
   String? code;
-  Data50? data;
+  Data? data;
 
-  LessonModel({this.status, this.code, this.data});
+  QuizModel({this.status, this.code, this.data});
 
-  LessonModel copyWith({String? status, String? code, Data50? data}) =>
-      LessonModel(status: status ?? this.status,
-          code: code ?? this.code,
-          data: data ?? this.data);
+  QuizModel copyWith({String? status, String? code, Data? data}) => QuizModel(
+      status: status ?? this.status,
+      code: code ?? this.code,
+      data: data ?? this.data);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -219,9 +243,9 @@ class LessonModel {
     return map;
   }
 
-  LessonModel.fromJson(dynamic json){
+  QuizModel.fromJson(dynamic json) {
     status = json["status"];
     code = json["code"];
-    data = json["data"] != null ? Data50.fromJson(json["data"]) : null;
+    data = json["data"] != null ? Data.fromJson(json["data"]) : null;
   }
 }

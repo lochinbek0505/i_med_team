@@ -203,7 +203,7 @@ class Modules {
     required  num id,
     required  String name,
     required   bool isOpen,
-    required   List<Lessons> lessons,}){
+    required   List<Lessons5> lessons,}){
     _id = id;
     _name = name;
     _isOpen = isOpen;
@@ -217,18 +217,18 @@ class Modules {
     if (json['lessons'] != null) {
       _lessons = [];
       json['lessons'].forEach((v) {
-        _lessons!.add(Lessons.fromJson(v));
+        _lessons!.add(Lessons5.fromJson(v));
       });
     }
   }
   num? _id;
   String? _name;
   bool? _isOpen;
-  List<Lessons>? _lessons;
+  List<Lessons5>? _lessons;
 Modules copyWith({required   num id,
   required  String name,
   required  bool isOpen,
-  required List<Lessons> lessons,
+  required List<Lessons5> lessons,
 }) => Modules(  id: id,
   name: name,
   isOpen: isOpen,
@@ -237,7 +237,7 @@ Modules copyWith({required   num id,
   num get id => _id!;
   String get name => _name!;
   bool get isOpen => _isOpen!;
-  List<Lessons> get lessons => _lessons!;
+  List<Lessons5> get lessons => _lessons!;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -258,8 +258,8 @@ Modules copyWith({required   num id,
 /// duration : 60
 /// is_open : true
 
-class Lessons {
-  Lessons({
+class Lessons5 {
+  Lessons5({
     required  num id,
     required   String name,
     required   String type,
@@ -272,7 +272,7 @@ class Lessons {
     _isOpen = isOpen;
 }
 
-  Lessons.fromJson(dynamic json) {
+  Lessons5.fromJson(dynamic json) {
     _id = json['id'];
     _name = json['name'];
     _type = json['type'];
@@ -284,12 +284,12 @@ class Lessons {
   String? _type;
   num? _duration;
   bool? _isOpen;
-Lessons copyWith({required   num id,
+Lessons5 copyWith({required   num id,
   required String name,
   required  String type,
   required num duration,
   required   bool isOpen,
-}) => Lessons(  id: id,
+}) => Lessons5(  id: id,
   name: name,
   type: type,
   duration: duration,

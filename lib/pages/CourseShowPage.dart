@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/models/show_courses_model.dart';
 import 'package:i_med_team/pages/LessonsPage.dart';
+import 'package:i_med_team/pages/MultiSelectPage.dart';
+import 'package:i_med_team/pages/test_page.dart';
 import 'package:i_med_team/widgets/CourseInformationWidget.dart';
 
 import '../services/ApiService.dart';
@@ -31,6 +34,7 @@ class _CourseShowPageState extends State<CourseShowPage> {
   void initState() {
     super.initState();
     _itemsFuture = apiService.course_detailes(widget.id!);
+    _refreshItems();
   }
 
   Future<void> _refreshItems() async {
@@ -38,6 +42,41 @@ class _CourseShowPageState extends State<CourseShowPage> {
       _itemsFuture = apiService
           .course_detailes(widget.id!); // Re-fetch items when refreshing
     });
+  }
+
+  void quiz_navigation(
+      {required num course_id,
+      required num modul_id,
+      required num lesson_id}) async {
+    LessonModel data =
+        await apiService.show_lesson(course_id, modul_id, lesson_id);
+
+    switch (data.data!.quiz!.questionsList![0].type) {
+      case "one_select":
+        {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => QuestionPage(
+                  index: 0,
+                  score: 0,
+                  data: data,
+                ),
+              ));
+        }
+      case "many_select":
+        {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MultiSelectPage(
+                  index: 0,
+                  score: 0,
+                  data: data,
+                ),
+              ));
+        }
+    }
   }
 
   @override
@@ -295,18 +334,25 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                           }
                                           return GestureDetector(
                                             onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        LessonsPage(
-                                                            course_id:
-                                                                widget.id!,
-                                                            modul_id:
-                                                                section.id,
-                                                            lesson_id:
-                                                                item.id)),
-                                              );
+                                              if (item.type == "lesson") {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          LessonsPage(
+                                                              course_id:
+                                                                  widget.id!,
+                                                              modul_id:
+                                                                  section.id,
+                                                              lesson_id:
+                                                                  item.id)),
+                                                );
+                                              } else if (item.type == "quiz") {
+                                                quiz_navigation(
+                                                    course_id: widget.id!,
+                                                    modul_id: section.id,
+                                                    lesson_id: item.id);
+                                              }
                                             },
                                             child: ListTile(
                                               leading: Icon(

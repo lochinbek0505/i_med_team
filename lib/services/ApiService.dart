@@ -7,6 +7,8 @@ import 'package:i_med_team/models/end_model.dart';
 import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/models/login_request.dart';
 import 'package:i_med_team/models/login_response.dart';
+import 'package:i_med_team/models/my_courses_model.dart';
+import 'package:i_med_team/models/quiz_model.dart';
 import 'package:i_med_team/models/register_request.dart';
 import 'package:i_med_team/models/register_response.dart';
 import 'package:i_med_team/models/show_courses_model.dart';
@@ -200,6 +202,32 @@ class ApiService {
     }
   }
 
+  Future<QuizModel> show_quiz(
+      num course_id, num modul_id, num lesson_id) async {
+    var token = await getToken();
+
+    final url = Uri.parse(
+        '$baseUrl/courses/$course_id/modules/$modul_id/lessons/$lesson_id/'); // Adjust the endpoint as needed
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Token $token'},
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+
+      if (data['success'] == true) {
+        return QuizModel.fromJson(data);
+      } else {
+        return QuizModel.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to get courses');
+    }
+  }
+
   Future<EndEnd> end_lesson(EndModel end) async {
     var token = await getToken();
 
@@ -207,7 +235,10 @@ class ApiService {
         Uri.parse('$baseUrl/courses/end/'); // Adjust the endpoint as needed
      final response = await http.post(
       url,
-      headers: {'Authorization': 'Token $token'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token'
+      },
       body: jsonEncode(end.toJson()),
     );
 
@@ -222,7 +253,31 @@ class ApiService {
       }
     } else {
       print(response);
-      throw Exception('Failed to login');
+      throw Exception('Failed to login ${response.body}');
+    }
+  }
+
+  Future<MyCoursesModel> my_courses_list() async {
+    var token = await getToken();
+
+    final url =
+        Uri.parse('$baseUrl/courses/my/'); // Adjust the endpoint as needed
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Token $token'},
+    );
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+
+      if (data['success'] == true) {
+        return MyCoursesModel.fromJson(data);
+      } else {
+        return MyCoursesModel.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to get courses');
     }
   }
 }
