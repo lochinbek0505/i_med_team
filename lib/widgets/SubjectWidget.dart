@@ -4,7 +4,7 @@ import 'package:i_med_team/models/subject_model.dart';
 class Subjectwidget extends StatelessWidget {
   Subjectwidget({super.key, required this.data});
 
-  Subject data;
+  Subject50 data;
 
   @override
   Widget build(BuildContext context) {

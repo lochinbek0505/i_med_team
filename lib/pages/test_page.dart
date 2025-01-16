@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/lesson_model.dart';
+import 'package:i_med_team/pages/TestResultPage.dart';
 import 'package:i_med_team/pages/WritableQuestion.dart';
 
+import '../models/end_model.dart';
+import '../models/end_test_model.dart';
+import '../services/ApiService.dart';
 import 'MatchableQuestion.dart';
 import 'MultiSelectPage.dart';
 
@@ -9,8 +13,17 @@ class QuestionPage extends StatefulWidget {
   num? index;
   num? score;
   LessonModel? data;
+  num? course_id;
+  num? module_id;
+  num? lesson_id;
 
-  QuestionPage({required this.index, required this.score, required this.data});
+  QuestionPage(
+      {required this.index,
+      required this.score,
+      required this.data,
+      required this.course_id,
+      required this.module_id,
+      required this.lesson_id});
 
   @override
   _QuestionPageState createState() => _QuestionPageState();
@@ -24,6 +37,7 @@ class _QuestionPageState extends State<QuestionPage> {
   var index;
   var index2 = 0;
   var score;
+  final ApiService apiService = ApiService('https://oztech.uz/api/v1');
 
   void initialize() {
     quizModel = widget.data!;
@@ -32,7 +46,7 @@ class _QuestionPageState extends State<QuestionPage> {
   var check_selecd = false;
 
   double prs = 0;
-
+  var len = 0;
   // var
   var check_nom = 0;
   var check_correct = false;
@@ -43,76 +57,143 @@ class _QuestionPageState extends State<QuestionPage> {
     index = widget.index!.toInt();
     score = widget.score!.toInt();
     initialize();
+    len = quizModel.data!.quiz!.questionsList!.length;
+
     calculate_prs();
   }
 
   void calculate_prs() {
-    prs = (index / quizModel.data!.quiz!.questionsList!.length);
+    prs = (index + 1) / (len);
+    print(len);
+    print(index);
   }
 
   Future<void> button_click() async {
-    setState(() {
-      check_correct = true;
-    });
+    if (check_selecd) {
+      setState(() {
+        check_correct = true;
+      });
 
-    // Wait for a specific duration (e.g., 3 seconds)
-    await Future.delayed(Duration(seconds: 1));
+      // Wait for a specific duration (e.g., 3 seconds)
+      await Future.delayed(Duration(seconds: 1));
 
-    setState(() {
-      if (quizModel
-          .data!.quiz!.questionsList![index].answersList![index2].isCorrect!) {
-        score++;
-      }
-      if (quizModel.data!.quiz!.questionsList!.length > index + 1) {
-        index++;
-        print(score);
-        switch (quizModel.data!.quiz!.questionsList![index].type) {
-          case "one_select":
-            {
-              calculate_prs();
-              check_correct = false;
-            }
-          case "many_select":
-            {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MultiSelectPage(
-                      index: index,
-                      score: score,
-                      data: quizModel,
-                    ),
-                  ));
-            }
-          case "writable":
-            {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WritableQuestion(
-                      index: index,
-                      score: score,
-                      data: quizModel,
-                    ),
-                  ));
-            }
-          case "matchable":
-            {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MatchableQuestion(
-                      index: index,
-                      score: score,
-                      data: quizModel,
-                    ),
-                  ));
-            }
+      setState(() {
+        if (quizModel.data!.quiz!.questionsList![index].answersList![index2]
+            .isCorrect!) {
+          score++;
+          print(score);
         }
-      } else {
-        print(score);
-      }
-    });
+        if (quizModel.data!.quiz!.questionsList!.length > index + 1) {
+          index++;
+          print(score);
+          switch (quizModel.data!.quiz!.questionsList![index].type) {
+            case "one_select":
+              {
+                calculate_prs();
+                check_correct = false;
+              }
+            case "many_select":
+              {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MultiSelectPage(
+                        index: index,
+                        score: score,
+                        course_id: widget.course_id,
+                        module_id: widget.module_id,
+                        lesson_id: widget.lesson_id,
+                        data: quizModel,
+                      ),
+                    ));
+              }
+            case "writable":
+              {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WritableQuestion(
+                        index: index,
+                        course_id: widget.course_id,
+                        module_id: widget.module_id,
+                        lesson_id: widget.lesson_id,
+                        score: score,
+                        data: quizModel,
+                      ),
+                    ));
+              }
+            case "matchable":
+              {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MatchableQuestion(
+                        course_id: widget.course_id,
+                        module_id: widget.module_id,
+                        lesson_id: widget.lesson_id,
+                        index: index,
+                        score: score,
+                        data: quizModel,
+                      ),
+                    ));
+              }
+          }
+        } else {
+          var percent = score / widget.data!.data!.quiz!.questionsList!.length;
+
+          end(EndTestModel(
+              course: widget.course_id,
+              module: widget.module_id,
+              lesson: widget.lesson_id,
+              score: score,
+              percent: percent));
+          print(EndTestModel(
+              course: widget.course_id,
+              module: widget.module_id,
+              lesson: widget.lesson_id,
+              score: score,
+              percent: percent));
+        }
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Iltimos javobni tanlang !"),
+      ));
+    }
+  }
+
+  Future<void> end(EndTestModel model) async {
+    _endLesson();
+    _endTest(model);
+  }
+
+  void _endLesson() async {
+    var data = await apiService.end_lesson(EndModel(
+        course: widget.course_id,
+        modul: widget.module_id,
+        lesson: widget.lesson_id));
+    if (data.status == "success") {}
+  }
+
+  void _endTest(EndTestModel model) async {
+    var data = await apiService.end_test(EndTestModel(
+      course: model.course,
+      module: model.module,
+      lesson: model.lesson,
+      score: model.score,
+      percent: model.percent,
+    ));
+    if (data.status == "success") {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TestResultPage(
+                  precent: (model.percent! * 100).toInt().toString(),
+                  correct: model.score.toString(),
+                  incorrect: (quizModel.data!.quiz!.questionsList!.length -
+                          model.score!)
+                      .toString())));
+    }
   }
 
   @override
@@ -167,7 +248,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   width: 15,
                 ),
                 Text(
-                  "6/10",
+                  "${index + 1}/$len",
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.black,
@@ -190,12 +271,13 @@ class _QuestionPageState extends State<QuestionPage> {
                   itemCount: quizModel
                       .data!.quiz!.questionsList![index].answersList!.length,
                   itemBuilder: (context, index1) {
-                    index2 = index1;
                     Answers answer = quizModel
                         .data!.quiz!.questionsList![index].answersList![index1];
                     return GestureDetector(
                       onTap: () {
                         setState(() {
+                          index2 = index1;
+
                           check_selecd = true;
                           selectedAnswer = answer.value1!;
                         });

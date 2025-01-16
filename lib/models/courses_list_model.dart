@@ -2,7 +2,7 @@ class CoursesListModel {
   CoursesListModel({
     required String status,
     required String code,
-    required List<Data> data,
+    required List<Data70> data,
   }) {
     _status = status;
     _code = code;
@@ -15,19 +15,19 @@ class CoursesListModel {
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
-        _data!.add(Data.fromJson(v));
+        _data!.add(Data70.fromJson(v));
       });
     }
   }
 
   String? _status;
   String? _code;
-  List<Data>? _data;
+  List<Data70>? _data;
 
   CoursesListModel copyWith({
     required String status,
     required String code,
-    required List<Data> data,
+    required List<Data70> data,
   }) =>
       CoursesListModel(
         status: status ?? _status!,
@@ -39,7 +39,7 @@ class CoursesListModel {
 
   String get code => _code!;
 
-  List<Data> get data => _data!;
+  List<Data70> get data => _data!;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -62,8 +62,8 @@ class CoursesListModel {
 /// count_students : 0
 /// created : "25-12-2024 20:12:44"
 
-class Data {
-  Data({
+class Data70 {
+  Data70({
     required num id,
     required String name,
     required User user,
@@ -85,7 +85,7 @@ class Data {
     _created = created;
   }
 
-  Data.fromJson(dynamic json) {
+  Data70.fromJson(dynamic json) {
     _id = json['id'];
     _name = json['name'];
     _user = json['user'] != null ? User.fromJson(json['user']) : null;
@@ -108,7 +108,7 @@ class Data {
   num? _countStudents;
   String? _created;
 
-  Data copyWith({
+  Data70 copyWith({
     required num id,
     required String name,
     required User user,
@@ -119,7 +119,7 @@ class Data {
     required num countStudents,
     required String created,
   }) =>
-      Data(
+      Data70(
         id: id ?? _id!,
         name: name ?? _name!,
         user: user ?? _user!,

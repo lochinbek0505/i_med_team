@@ -2,15 +2,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:ignore="WrongManifestParent" />
+    <uses-permission android:name="android.permission.INTERNET"/> <!-- Add this -->
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="WrongManifestParent" />
-
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         android:label="i_med_team">
-
 
         <activity
             android:name=".MainActivity"

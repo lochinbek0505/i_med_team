@@ -3,15 +3,27 @@ import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/pages/MatchableQuestion.dart';
 import 'package:i_med_team/pages/test_page.dart';
 
+import '../models/end_model.dart';
+import '../models/end_test_model.dart';
+import '../services/ApiService.dart';
 import 'MultiSelectPage.dart';
+import 'TestResultPage.dart';
 
 class WritableQuestion extends StatefulWidget {
   num? index;
   num? score;
   LessonModel? data;
+  num? course_id;
+  num? module_id;
+  num? lesson_id;
 
   WritableQuestion(
-      {required this.index, required this.score, required this.data});
+      {required this.index,
+      required this.score,
+      required this.data,
+      required this.course_id,
+      required this.module_id,
+      required this.lesson_id});
 
   @override
   _WritableQuestionState createState() => _WritableQuestionState();
@@ -26,6 +38,7 @@ class _WritableQuestionState extends State<WritableQuestion> {
   var index2 = 0;
   var score;
   TextEditingController controller = TextEditingController();
+  final ApiService apiService = ApiService('https://oztech.uz/api/v1');
 
   void initialize() {
     quizModel = widget.data!;
@@ -38,21 +51,26 @@ class _WritableQuestionState extends State<WritableQuestion> {
   // var
   var check_nom = 0;
   var check_correct = false;
-
+var len;
   @override
   void initState() {
     super.initState();
     index = widget.index!.toInt();
     score = widget.score!.toInt();
+
     initialize();
+    len = quizModel.data!.quiz!.questionsList!.length;
+
     calculate_prs();
   }
 
   void calculate_prs() {
-    prs = (index + 1 / quizModel.data!.quiz!.questionsList!.length);
+    prs = (index + 1) / (len);
   }
 
   Future<void> button_click() async {
+  if(controller.text.isNotEmpty){
+
     setState(() {
       check_correct = true;
     });
@@ -62,10 +80,10 @@ class _WritableQuestionState extends State<WritableQuestion> {
 
     setState(() {
       if (quizModel
-              .data!.quiz!.questionsList![index].answersList![index2].value1!
-              .toLowerCase()
-              .trim()
-              .toString() ==
+          .data!.quiz!.questionsList![index].answersList![index2].value1!
+          .toLowerCase()
+          .trim()
+          .toString() ==
           controller.text.toLowerCase().trim()) {
         score++;
       }
@@ -76,11 +94,14 @@ class _WritableQuestionState extends State<WritableQuestion> {
         switch (quizModel.data!.quiz!.questionsList![index].type) {
           case "one_select":
             {
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => QuestionPage(
                       index: index,
+                      course_id: widget.course_id,
+                      module_id: widget.module_id,
+                      lesson_id: widget.lesson_id,
                       score: score,
                       data: quizModel,
                     ),
@@ -88,22 +109,28 @@ class _WritableQuestionState extends State<WritableQuestion> {
             }
           case "many_select":
             {
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => MultiSelectPage(
                       index: index,
+                      course_id: widget.course_id,
+                      module_id: widget.module_id,
+                      lesson_id: widget.lesson_id,
                       score: score,
                       data: quizModel,
                     ),
                   ));
             }
           case "matchable":{
-            Navigator.push(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MatchableQuestion(
                     index: index,
+                    course_id: widget.course_id,
+                    module_id: widget.module_id,
+                    lesson_id: widget.lesson_id,
                     score: score,
                     data: quizModel,
                   ),
@@ -116,9 +143,68 @@ class _WritableQuestionState extends State<WritableQuestion> {
             }
         }
       } else {
-        print(score);
+        var percent = score / widget.data!.data!.quiz!.questionsList!.length;
+
+
+        end(EndTestModel(
+            course: widget.course_id,
+            module: widget.module_id,
+            lesson: widget.lesson_id,
+            score: score,
+            percent: percent));
+        print(EndTestModel(
+            course: widget.course_id,
+            module: widget.module_id,
+            lesson: widget.lesson_id,
+            score: score,
+            percent: percent));
       }
     });
+  }
+  else{
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+        const SnackBar(
+          content: Text(
+              "Iltimos javobni kiriting !"),
+        ));
+  }
+  }
+  Future<void> end(EndTestModel model)async {
+    _endLesson();
+    _endTest(model);
+  }
+
+  void _endLesson() async {
+    var data = await apiService.end_lesson(EndModel(
+        course: widget.course_id,
+        modul: widget.module_id,
+        lesson: widget.lesson_id));
+    if (data.status == "success") {
+
+    }
+  }
+  void _endTest(EndTestModel model) async {
+    var data = await apiService.end_test(EndTestModel(
+      course: model.course,
+      module: model.module,
+      lesson: model.lesson,
+      score: model.score,
+      percent: model.percent,
+    ));
+    if (data.status == "success") {
+
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TestResultPage(
+                  precent: (model.percent! * 100).toInt().toString(),
+                  correct: model.score.toString(),
+                  incorrect: (quizModel.data!.quiz!.questionsList!.length -
+                      model.score!)
+                      .toString())));
+
+    }
   }
 
   @override
@@ -173,7 +259,7 @@ class _WritableQuestionState extends State<WritableQuestion> {
                     width: 15,
                   ),
                   Text(
-                    "6/10",
+                    "${index+1}/$len",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,

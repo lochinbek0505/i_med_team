@@ -3,15 +3,28 @@ import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/pages/WritableQuestion.dart';
 import 'package:i_med_team/pages/test_page.dart';
 
+import '../models/end_model.dart';
+import '../models/end_test_model.dart';
+import '../services/ApiService.dart';
 import 'MatchableQuestion.dart';
+import 'TestResultPage.dart';
 
 class MultiSelectPage extends StatefulWidget {
   num? index;
   num? score;
+
   LessonModel? data;
 
-  MultiSelectPage(
-      {required this.index, required this.score, required this.data});
+  num? course_id;
+  num? module_id;
+  num? lesson_id;
+
+  MultiSelectPage({required this.index,
+    required this.score,
+    required this.data,
+    required this.course_id,
+    required this.module_id,
+    required this.lesson_id});
 
   @override
   _MultiSelectPageState createState() => _MultiSelectPageState();
@@ -25,6 +38,7 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
   var index;
   var index2 = 0;
   var score;
+  final ApiService apiService = ApiService('https://oztech.uz/api/v1');
 
   void initialize() {
     quizModel = widget.data!;
@@ -37,7 +51,7 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
   // var
   var check_nom = 0;
   var check_correct = false;
-
+  var len;
   List<Answers> base = [];
 
   bool check_base(name) {
@@ -55,85 +69,149 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
     index = widget.index!.toInt();
     score = widget.score!.toInt();
     initialize();
+    len = quizModel.data!.quiz!.questionsList!.length;
+
     calculate_prs();
   }
 
   void calculate_prs() {
-    prs = (index / quizModel.data!.quiz!.questionsList!.length);
+    prs = (index + 1) / (len);
   }
 
   Future<void> button_click() async {
-    setState(() {
-      check_correct = true;
-    });
+    if (base.isNotEmpty) {
+      setState(() {
+        check_correct = true;
+      });
 
-    // Wait for a specific duration (e.g., 3 seconds)
-    await Future.delayed(Duration(seconds: 1));
+      // Wait for a specific duration (e.g., 3 seconds)
+      await Future.delayed(Duration(seconds: 1));
 
-    setState(() {
-      var ch = true;
+      setState(() {
+        var ch = true;
 
-      for (var item in base) {
-        if (item.isCorrect!) {
-          ch = false;
+        for (var item in base) {
+          if (!item.isCorrect!) {
+            ch = false;
+          }
         }
-      }
 
-      if (ch) {
-        score++;
-      }
-
-      if (quizModel.data!.quiz!.questionsList!.length > index + 1) {
-        index++;
-
-        print(score);
-        switch (quizModel.data!.quiz!.questionsList![0].type) {
-          case "one_select":
-            {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => QuestionPage(
-                      index: index,
-                      score: score,
-                      data: quizModel,
-                    ),
-                  ));
-            }
-          case "many_select":
-            {
-              calculate_prs();
-              check_correct = false;
-            }
-          case "writable":
-            {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WritableQuestion(
-                      index: index,
-                      score: score,
-                      data: quizModel,
-                    ),
-                  ));
-            }
-          case "matchable":
-            {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MatchableQuestion(
-                      index: index,
-                      score: score,
-                      data: quizModel,
-                    ),
-                  ));
-            }
+        if (ch) {
+          score++;
         }
-      } else {
-        print(score);
-      }
-    });
+
+        if (quizModel.data!.quiz!.questionsList!.length > index + 1) {
+          index++;
+
+          print(score);
+          switch (quizModel.data!.quiz!.questionsList![0].type) {
+            case "one_select":
+              {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuestionPage(
+                        index: index,
+                        score: score,
+                        course_id: widget.course_id,
+                        module_id: widget.module_id,
+                        lesson_id: widget.lesson_id,
+                        data: quizModel,
+                      ),
+                    ));
+              }
+            case "many_select":
+              {
+                calculate_prs();
+                check_correct = false;
+              }
+            case "writable":
+              {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WritableQuestion(
+                        index: index,
+                        course_id: widget.course_id,
+                        module_id: widget.module_id,
+                        lesson_id: widget.lesson_id,
+                        score: score,
+                        data: quizModel,
+                      ),
+                    ));
+              }
+            case "matchable":
+              {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MatchableQuestion(
+                        index: index,
+                        course_id: widget.course_id,
+                        module_id: widget.module_id,
+                        lesson_id: widget.lesson_id,
+                        score: score,
+                        data: quizModel,
+                      ),
+                    ));
+              }
+          }
+        } else {
+          var percent = score / widget.data!.data!.quiz!.questionsList!.length;
+
+          end(EndTestModel(
+              course: widget.course_id,
+              module: widget.module_id,
+              lesson: widget.lesson_id,
+              score: score,
+              percent: percent));
+          print(EndTestModel(
+              course: widget.course_id,
+              module: widget.module_id,
+              lesson: widget.lesson_id,
+              score: score,
+              percent: percent));
+        }
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Iltimos javobni tanlang !"),
+      ));
+    }
+  }
+
+  Future<void> end(EndTestModel model) async {
+    _endLesson();
+    _endTest(model);
+  }
+
+  void _endLesson() async {
+    var data = await apiService.end_lesson(EndModel(
+        course: widget.course_id,
+        modul: widget.module_id,
+        lesson: widget.lesson_id));
+    if (data.status == "success") {}
+  }
+
+  void _endTest(EndTestModel model) async {
+    var data = await apiService.end_test(EndTestModel(
+      course: model.course,
+      module: model.module,
+      lesson: model.lesson,
+      score: model.score,
+      percent: model.percent,
+    ));
+    if (data.status == "success") {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TestResultPage(
+                  precent: (model.percent! * 100).toInt().toString(),
+                  correct: model.score.toString(),
+                  incorrect: (quizModel.data!.quiz!.questionsList!.length -
+                          model.score!)
+                      .toString())));
+    }
   }
 
   @override
@@ -188,7 +266,7 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
                   width: 15,
                 ),
                 Text(
-                  "6/10",
+                  "${index + 1}/$len",
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.black,

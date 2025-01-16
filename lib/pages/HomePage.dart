@@ -18,7 +18,7 @@ class _HomepageState extends State<Homepage> {
   final List<Widget> _pages = [
     Mainpage(),
     Coursespage(),
-    CourseList(),
+    ReytingPage(),
     ProfilePage()
   ];
 

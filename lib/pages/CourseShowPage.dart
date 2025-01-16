@@ -7,6 +7,8 @@ import 'package:i_med_team/pages/test_page.dart';
 import 'package:i_med_team/widgets/CourseInformationWidget.dart';
 
 import '../services/ApiService.dart';
+import 'MatchableQuestion.dart';
+import 'WritableQuestion.dart';
 
 class CourseShowPage extends StatefulWidget {
   final num? id;
@@ -60,6 +62,9 @@ class _CourseShowPageState extends State<CourseShowPage> {
                 builder: (context) => QuestionPage(
                   index: 0,
                   score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
                   data: data,
                 ),
               ));
@@ -72,6 +77,40 @@ class _CourseShowPageState extends State<CourseShowPage> {
                 builder: (context) => MultiSelectPage(
                   index: 0,
                   score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
+                  data: data,
+                ),
+              ));
+        }
+      case "writable":
+        {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WritableQuestion(
+                  index: 0,
+                  score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
+                  data: data,
+                ),
+              ));
+        }
+
+      case "matchable":
+        {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MatchableQuestion(
+                  index: 0,
+                  score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
                   data: data,
                 ),
               ));
@@ -329,29 +368,44 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                         (index) {
                                           final item = section.lessons[index];
                                           var isOpen = false;
-                                          if (section.isOpen && data.isOpen) {
+                                          print(
+                                              "${data.isOpen}+${data.modules[0].isOpen}+${data.modules[0].lessons[0].isOpen}");
+                                          // section.isOpen &&
+                                          if ( data.isOpen) {
                                             isOpen = item.isOpen;
                                           }
                                           return GestureDetector(
                                             onTap: () {
-                                              if (item.type == "lesson") {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          LessonsPage(
-                                                              course_id:
-                                                                  widget.id!,
-                                                              modul_id:
-                                                                  section.id,
-                                                              lesson_id:
-                                                                  item.id)),
-                                                );
-                                              } else if (item.type == "quiz") {
-                                                quiz_navigation(
-                                                    course_id: widget.id!,
-                                                    modul_id: section.id,
-                                                    lesson_id: item.id);
+                                              // section.isOpen &&
+                                              if (data.isOpen &&
+                                                  item.isOpen ) {
+                                                if (item.type == "lesson") {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            LessonsPage(
+                                                                course_id:
+                                                                    widget.id!,
+                                                                modul_id:
+                                                                    section.id,
+                                                                lesson_id:
+                                                                    item.id)),
+                                                  );
+                                                } else if (item.type ==
+                                                    "quiz") {
+                                                  quiz_navigation(
+                                                      course_id: widget.id!,
+                                                      modul_id: section.id,
+                                                      lesson_id: item.id);
+                                                }
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        const SnackBar(
+                                                  content: Text(
+                                                      "Iltimos avval admin bilan bo'glanib kursga qo'shiling."),
+                                                ));
                                               }
                                             },
                                             child: ListTile(

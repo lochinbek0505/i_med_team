@@ -126,9 +126,9 @@ class _LessonsPageState extends State<LessonsPage> {
           _localFilePath = filePath;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File downloaded to: $filePath')),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('File downloaded to: $filePath')),
+        // );
       } else {
         setState(() {
           _localFilePath = filePath;

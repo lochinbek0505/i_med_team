@@ -6,6 +6,11 @@ class MyLessonsTrModel{
     int? id;
     bool? isOpened;
 
-    MyLessonsTrModel(this.lesson, this.id, this.isOpened);
+    @override
+  String toString() {
+    return 'MyLessonsTrModel{lesson: $lesson, id: $id, isOpened: $isOpened}';
+  }
+
+  MyLessonsTrModel(this.lesson, this.id, this.isOpened);
 
 }

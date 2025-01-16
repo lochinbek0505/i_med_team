@@ -3,7 +3,9 @@ import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/models/my_lessons_tr_model.dart';
 import 'package:i_med_team/models/show_courses_model.dart';
 import 'package:i_med_team/pages/LessonsPage.dart';
+import 'package:i_med_team/pages/MatchableQuestion.dart';
 import 'package:i_med_team/pages/MultiSelectPage.dart';
+import 'package:i_med_team/pages/WritableQuestion.dart';
 import 'package:i_med_team/pages/test_page.dart';
 
 import '../services/ApiService.dart';
@@ -58,6 +60,9 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                 builder: (context) => QuestionPage(
                   index: 0,
                   score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
                   data: data,
                 ),
               ));
@@ -70,6 +75,40 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                 builder: (context) => MultiSelectPage(
                   index: 0,
                   score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
+                  data: data,
+                ),
+              ));
+        }
+      case "writable":
+        {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WritableQuestion(
+                  index: 0,
+                  score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
+                  data: data,
+                ),
+              ));
+        }
+
+      case "matchable":
+        {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MatchableQuestion(
+                  index: 0,
+                  score: 0,
+                  course_id: course_id,
+                  module_id: modul_id,
+                  lesson_id: lesson_id,
                   data: data,
                 ),
               ));
@@ -126,20 +165,28 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                   // Expandable Section
                   return GestureDetector(
                     onTap: () {
-                      if (item.lesson!.type == "lesson") {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LessonsPage(
-                                  course_id: widget.id!,
-                                  modul_id: item.id!.toInt(),
-                                  lesson_id: item.lesson!.id)),
-                        );
-                      } else if (item.lesson!.type == "quiz") {
-                        quiz_navigation(
-                            course_id: widget.id!,
-                            modul_id: item.id!.toInt(),
-                            lesson_id: item.lesson!.id);
+                      if (item.isOpened!) {
+                        if (item.lesson!.type == "lesson") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LessonsPage(
+                                    course_id: widget.id!,
+                                    modul_id: item.id!.toInt(),
+                                    lesson_id: item.lesson!.id)),
+                          );
+                        } else if (item.lesson!.type == "quiz") {
+                          quiz_navigation(
+                              course_id: widget.id!,
+                              modul_id: item.id!.toInt(),
+                              lesson_id: item.lesson!.id);
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content:
+                              Text("Iltimos avval oldingi darslarni tugating."),
+                        ));
                       }
                     },
                     child: Padding(

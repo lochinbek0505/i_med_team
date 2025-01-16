@@ -2,7 +2,7 @@ class SubjectModel {
   SubjectModel({
     required String status,
     required String code,
-    required List<Subject> data,
+    required List<Subject50> data,
   }) {
     _status = status;
     _code = code;
@@ -15,19 +15,19 @@ class SubjectModel {
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
-        _data!.add(Subject.fromJson(v));
+        _data!.add(Subject50.fromJson(v));
       });
     }
   }
 
   String? _status;
   String? _code;
-  List<Subject>? _data;
+  List<Subject50>? _data;
 
   SubjectModel copyWith({
     required String status,
     required String code,
-    required List<Subject> data,
+    required List<Subject50> data,
   }) =>
       SubjectModel(
         status: status ?? _status!,
@@ -39,7 +39,7 @@ class SubjectModel {
 
   String get code => _code!;
 
-  List<Subject> get data => _data!;
+  List<Subject50> get data => _data!;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -55,8 +55,8 @@ class SubjectModel {
 /// id : 1
 /// name : "Sotsologiya"
 
-class Subject {
-  Subject({
+class Subject50 {
+  Subject50({
     required num id,
     required String name,
   }) {
@@ -64,7 +64,7 @@ class Subject {
     _name = name;
   }
 
-  Subject.fromJson(dynamic json) {
+  Subject50.fromJson(dynamic json) {
     _id = json['id'];
     _name = json['name'];
   }
@@ -72,11 +72,11 @@ class Subject {
   num? _id;
   String? _name;
 
-  Subject copyWith({
+  Subject50 copyWith({
     required num id,
     required String name,
   }) =>
-      Subject(
+      Subject50(
         id: id ?? _id!,
         name: name ?? _name!,
       );
