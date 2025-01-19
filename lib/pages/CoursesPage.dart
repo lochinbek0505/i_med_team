@@ -34,9 +34,9 @@ class _CoursespageState extends State<Coursespage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Center(
           child: Text(
             "Mening kurslarim",

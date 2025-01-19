@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/courses_list_model.dart';
 import 'package:i_med_team/models/subject_model.dart';
 import 'package:i_med_team/pages/CourseShowPage.dart';
 import 'package:i_med_team/widgets/SubjectWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../models/contact_model.dart';
+import '../models/profile_model.dart';
 import '../services/ApiService.dart';
 
 class Mainpage extends StatefulWidget {
@@ -17,9 +23,20 @@ class _MainpageState extends State<Mainpage> {
   final ApiService apiService =
       ApiService('https://oztech.uz/api/v1'); // Replace with your API URL
   late Future<CoursesListModel> _itemsFuture;
+  ProfileModel? profil;
+
+  Future<ProfileModel?> getUserFromPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('user');
+    if (userJson != null) {
+      Map<String, dynamic> userMap = jsonDecode(userJson);
+      return ProfileModel.fromJson(userMap);
+    }
+    return null;
+  }
 
   late List<Data70> items;
-  var filteredItems = [];
+  List<Data70> filteredItems = [];
   var subjects = [];
   late Future<SubjectModel> _subjects;
 
@@ -35,7 +52,7 @@ class _MainpageState extends State<Mainpage> {
     _itemsFuture = apiService.course_list();
     _itemsFuture.then((data) {
       setState(() {
-        items = data.data;
+        items = data.data!;
         filteredItems =
             List.from(items); // Initialize filteredItems with all items
       });
@@ -44,20 +61,30 @@ class _MainpageState extends State<Mainpage> {
     });
   }
 
+  Future<void> openTelegramWithPhone(String phone) async {
+    final Uri url = Uri.parse('tg://resolve?phone=$phone');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch Telegram with phone: $phone';
+    }
+  }
+
   void getCourses(num id) async {
     if(id!=10000){
     var data = await apiService.subject_course_list(id);
-    print(data.data[0].name);
+      print(data.data![0].name);
 
-    setState(() {
-      items = data.data;
-      filteredItems = data.data;
-    });}
+      setState(() {
+      items = data.data!;
+      filteredItems = data.data!;
+    });
+    }
     else{
       _itemsFuture = apiService.course_list();
       _itemsFuture.then((data) {
         setState(() {
-          items = data.data;
+          items = data.data!;
           filteredItems =
               List.from(items); // Initialize filteredItems with all items
         });
@@ -67,11 +94,26 @@ class _MainpageState extends State<Mainpage> {
     }
   }
 
+  Future<void> saveContactToPreferences(ContactModel user) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userJson = jsonEncode(user.toJson());
+    await prefs.setString('contact', userJson);
+  }
+  Future<ContactModel?> getContactFromPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('contact');
+    if (userJson != null) {
+      Map<String, dynamic> userMap = jsonDecode(userJson);
+      return ContactModel.fromJson(userMap);
+    }
+    return null;
+  }
+
   void _filterCourses(String query) {
     setState(() {
       filteredItems = items
           .where(
-              (item) => item.name.toLowerCase().contains(query.toLowerCase()))
+              (item) => item.name!.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -80,11 +122,21 @@ class _MainpageState extends State<Mainpage> {
   void initState() {
     super.initState();
 
+    apiService.contact().then((contact){
+      saveContactToPreferences(contact);
+    });
+    getUserFromPreferences().then((value) {
+      setState(() {
+        print(value!.data!.firstName);
+        profil = value;
+      });
+    });
+
     // Fetch courses and subjects from the API
     _itemsFuture = apiService.course_list();
     _itemsFuture.then((data) {
       setState(() {
-        items = data.data;
+        items = data.data!;
         filteredItems =
             List.from(items); // Initialize filteredItems with all items
       });
@@ -103,24 +155,31 @@ class _MainpageState extends State<Mainpage> {
     });
   }
 
+  String decodeText(String text) {
+    try {
+      return utf8.decode(text.runes.toList());
+    } catch (e) {
+      return text; // Xato bo‘lsa, asl matn qaytariladi
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        // foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "Salom , Lochinbek",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            //
+            profil != null
+                ? Text(
+                    "Salom , ${decodeText(profil!.data!.firstName.toString())} ",
+                    style: Theme.of(context).textTheme.titleLarge)
+                : Text("Salom ,  ",
+                    style: Theme.of(context).textTheme.titleLarge),
             Container(
               width: 40,
               height: 40,
@@ -128,10 +187,15 @@ class _MainpageState extends State<Mainpage> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
               ),
-              child: Image.network(
-                'https://picsum.photos/seed/picsum/200/300',
-                fit: BoxFit.cover,
-              ),
+              //
+              child: profil != null
+                  ? profil!.data!.image != null
+                      ? Image.network(
+                          profil!.data!.image.toString(),
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset("assets/teacher.png")
+                  : Image.asset("assets/teacher.png"),
             ),
           ],
         ),
@@ -171,19 +235,19 @@ class _MainpageState extends State<Mainpage> {
                 ),
               ),
             ),
-            Container(
-              height: 60,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 15),
-                child: subjects.isEmpty
-                    ? CircularProgressIndicator()
-                    : ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        // Make it scroll horizontally
-                        itemCount: subjects.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
+            subjects.isEmpty
+                ? CircularProgressIndicator()
+                : Container(
+                    height: 60,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 5.0, horizontal: 15),
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          // Make it scroll horizontally
+                          itemCount: subjects.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
                             onTap: () {
                               getCourses(subjects[index].id);
                             },
@@ -272,7 +336,7 @@ class _MainpageState extends State<Mainpage> {
 
                                           // Course Title
                                           Text(
-                                            "${filteredItems[index].name} ",
+                                            "${decodeText(filteredItems[index].name!)} ",
                                             maxLines: 1,
                                             style: TextStyle(
                                               fontSize: 18,
@@ -284,11 +348,12 @@ class _MainpageState extends State<Mainpage> {
                                           // Course Description
                                     Text(
                                       maxLines: 3,
-                                      filteredItems[index].description,
-                                      style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 14,
-                                      ),
+                                            decodeText(filteredItems[index]
+                                                .description!),
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 14,
+                                            ),
                                     ),
                                     const SizedBox(height: 10),
 
@@ -296,21 +361,9 @@ class _MainpageState extends State<Mainpage> {
                                           Row(
                                             children: [
                                               Text(
-                                                "${filteredItems[index].user.firstName} ${filteredItems[index].user.lastName}",
+                                                "${decodeText(filteredItems[index].user!.firstName!)} ${decodeText(filteredItems[index].user!.lastName!)}",
                                                 style: TextStyle(
                                                   fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 10),
-                                              const Icon(Icons.star,
-                                                  color: Colors.amber,
-                                                  size: 20),
-                                              const SizedBox(width: 4),
-                                              const Text(
-                                                "4.5",
-                                                style: TextStyle(
-                                                  fontSize: 15,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
@@ -342,18 +395,28 @@ class _MainpageState extends State<Mainpage> {
                                               fontSize: 18,
                                             ),
                                           ),
-                                          ElevatedButton(
-                                            onPressed: () {},
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.orange,
-                                              foregroundColor: Colors.white,
+                                          !filteredItems[index].isOpen!
+                                              ? ElevatedButton(
+                                                  onPressed: () async {
+                                                    var contact =
+                                                        await getContactFromPreferences();
+                                                    print(contact!.data!.phone);
+                                                    openTelegramWithPhone(
+                                                        contact!.data!.phone!);
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.orange,
+                                                    foregroundColor: Colors.white,
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                               ),
                                             ),
                                             child: const Text("Kursni olish"),
-                                          ),
+                                                )
+                                              : SizedBox(),
                                         ],
                                       ),
                                     ),

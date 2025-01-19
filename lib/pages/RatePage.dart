@@ -43,7 +43,7 @@ class _ReytingPageState extends State<ReytingPage> {
     // Fetch courses and subjects from the API
     _itemsFuture = await apiService.course_list();
     setState(() {
-      items = _itemsFuture.data;
+      items = _itemsFuture.data!;
       selectedCourse = items[0];
     });
     _itemsRate = await apiService.get_rate(
@@ -91,7 +91,7 @@ class _ReytingPageState extends State<ReytingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Peshqadamlar',
@@ -101,7 +101,7 @@ class _ReytingPageState extends State<ReytingPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         centerTitle: true,
       ),
       body: Padding(

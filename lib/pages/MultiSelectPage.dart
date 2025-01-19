@@ -217,9 +217,9 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: Center(
           child: Text(
             'Matematikadan imtihon',
@@ -322,7 +322,7 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
                                             ? Colors.green
                                             : Colors.red)
                                         : check_base(answer.value1)
-                                            ? Colors.grey
+                                            ? Colors.blue
                                             : Colors.white,
                                 width: 1.5,
                               ),
@@ -357,19 +357,16 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
               ),
             ),
             // Spacer(),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                padding: EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: !check_correct ? button_click : null,
-              child: Center(
-                child: Text(
-                  'KEYINGISI',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+            Container(
+              height: 55,
+              child: ElevatedButton(
+                style: Theme.of(context).elevatedButtonTheme.style,
+                onPressed: !check_correct ? button_click : null,
+                child: Center(
+                  child: Text(
+                    'KEYINGISI',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
               ),
             ),

@@ -120,9 +120,9 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: Text(
           "KURS HAQIDA",
           style: TextStyle(

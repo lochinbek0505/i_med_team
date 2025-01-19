@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:i_med_team/models/contact_model.dart';
 import 'package:i_med_team/models/courses_list_model.dart';
 import 'package:i_med_team/models/end_end.dart';
 import 'package:i_med_team/models/end_model.dart';
@@ -9,6 +10,7 @@ import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/models/login_request.dart';
 import 'package:i_med_team/models/login_response.dart';
 import 'package:i_med_team/models/my_courses_model.dart';
+import 'package:i_med_team/models/profile_model.dart';
 import 'package:i_med_team/models/quiz_model.dart';
 import 'package:i_med_team/models/rate_request_model.dart';
 import 'package:i_med_team/models/rate_response.dart';
@@ -340,6 +342,70 @@ class ApiService {
     } else {
       print(response);
       throw Exception('Failed to login ${response.body}');
+    }
+  }
+
+  Future<ContactModel?> getContactFromPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('contact');
+    if (userJson != null) {
+      Map<String, dynamic> userMap = jsonDecode(userJson);
+      return ContactModel.fromJson(userMap);
+    }
+    return null;
+  }
+
+  Future<void> saveContactToPreferences(ContactModel user) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userJson = jsonEncode(user.toJson());
+    await prefs.setString('contact', userJson);
+  }
+
+  Future<ProfileModel> profile() async {
+    var token = await getToken();
+
+    final url =
+        Uri.parse('$baseUrl/users/profile/'); // Adjust the endpoint as needed
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Token $token'},
+    );
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+
+      if (data['success'] == true) {
+        return ProfileModel.fromJson(data);
+      } else {
+        return ProfileModel.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to get courses');
+    }
+  }
+
+  Future<ContactModel> contact() async {
+    var token = await getToken();
+
+    final url =
+        Uri.parse('$baseUrl/users/contact/'); // Adjust the endpoint as needed
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Token $token'},
+    );
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+
+      if (data['success'] == true) {
+        return ContactModel.fromJson(data);
+      } else {
+        return ContactModel.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to get courses');
     }
   }
 }

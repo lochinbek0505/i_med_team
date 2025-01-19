@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/login_request.dart';
+import 'package:i_med_team/models/profile_model.dart';
 import 'package:i_med_team/pages/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,7 +52,9 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login successful')),
         );
-        Navigator.push(
+        var profile_data = await apiService.profile();
+        await saveUserToPreferences(profile_data);
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Homepage()),
         ); // Navigator.pop(context);
@@ -95,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: Center(
             child: Text(
           "Hisobga kirish",
@@ -106,69 +111,70 @@ class _LoginPageState extends State<LoginPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Container(
-            height: 360,
-            margin: EdgeInsets.symmetric(vertical: 20),
-            child: Card(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 30.0, left: 20, right: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextField(
-                      controller: phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Telefon raqamingiz',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 25),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Parolingiz',
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                    ),
-                    SizedBox(height: 30),
-                    isLoading
-                        ? CircularProgressIndicator()
-                        : Container(
-                            width: size.width / 0.9,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.redAccent),
-                              onPressed: handLogin,
-                              child: Text(
-                                "Hisobga kirish",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 19),
-                              ),
-                            ),
-                          ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterPage()),
-                        );
-                      },
-                      child: Text(
-                        "Ro'yxatdan o'tish",
-                        style: TextStyle(
-                          fontSize: 18,
+          child: SingleChildScrollView(
+            child: Container(
+              height: 360,
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 30.0, left: 20, right: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextField(
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          labelText: 'Telefon raqamingiz',
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 25),
+                      TextField(
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Parolingiz',
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                      ),
+                      SizedBox(height: 30),
+                      isLoading
+                          ? CircularProgressIndicator()
+                          : Container(
+                              width: size.width / 0.9,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: Theme.of(context).elevatedButtonTheme.style,
+                                onPressed: handLogin,
+                                child: Text(
+                                  "Hisobga kirish",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 19),
+                                ),
+                              ),
+                            ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegisterPage()),
+                          );
+                        },
+                        child: Text(
+                          "Ro'yxatdan o'tish",
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -176,5 +182,21 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<ProfileModel?> getUserFromPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('user');
+    if (userJson != null) {
+      Map<String, dynamic> userMap = jsonDecode(userJson);
+      return ProfileModel.fromJson(userMap);
+    }
+    return null;
+  }
+
+  Future<void> saveUserToPreferences(ProfileModel user) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userJson = jsonEncode(user.toJson());
+    await prefs.setString('user', userJson);
   }
 }

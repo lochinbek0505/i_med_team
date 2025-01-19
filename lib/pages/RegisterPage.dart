@@ -307,9 +307,9 @@ class _RegisterPageState extends State<RegisterPage> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      // backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: Center(
             child: Text(
           "Ro'yxatdan o'tish",
@@ -429,8 +429,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             width: size.width / 0.9,
                             height: 50,
                             child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.redAccent),
+                              style: Theme.of(context).elevatedButtonTheme.style,
                               onPressed: () {
                                 // Perform registration action
                                 handRegister();

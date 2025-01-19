@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/models/show_courses_model.dart';
@@ -5,7 +7,10 @@ import 'package:i_med_team/pages/LessonsPage.dart';
 import 'package:i_med_team/pages/MultiSelectPage.dart';
 import 'package:i_med_team/pages/test_page.dart';
 import 'package:i_med_team/widgets/CourseInformationWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../models/contact_model.dart';
 import '../services/ApiService.dart';
 import 'MatchableQuestion.dart';
 import 'WritableQuestion.dart';
@@ -38,6 +43,24 @@ class _CourseShowPageState extends State<CourseShowPage> {
     _itemsFuture = apiService.course_detailes(widget.id!);
     _refreshItems();
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    String message = "Welcome to the First Page!";
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Sahifaga qaytganingizda ishlaydi
+      final args = ModalRoute.of(context)?.settings.arguments as String?;
+      if (args != null) {
+        setState(() {
+          message = args;
+          _refreshItems();
+
+          // Natija asosida sahifani yangilash
+        });
+      }
+    });
+  }
 
   Future<void> _refreshItems() async {
     setState(() {
@@ -56,7 +79,7 @@ class _CourseShowPageState extends State<CourseShowPage> {
     switch (data.data!.quiz!.questionsList![0].type) {
       case "one_select":
         {
-          Navigator.push(
+         await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => QuestionPage(
@@ -67,11 +90,13 @@ class _CourseShowPageState extends State<CourseShowPage> {
                   lesson_id: lesson_id,
                   data: data,
                 ),
+                settings: const RouteSettings(arguments: "New message from Second Page!"),
+
               ));
         }
       case "many_select":
         {
-          Navigator.push(
+         await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MultiSelectPage(
@@ -118,13 +143,21 @@ class _CourseShowPageState extends State<CourseShowPage> {
     }
   }
 
+  String decodeText(String text) {
+    try {
+      return utf8.decode(text.runes.toList());
+    } catch (e) {
+      return text; // Xato bo‘lsa, asl matn qaytariladi
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: Center(
           child: Text(
             "KURS HAQIDA",
@@ -166,7 +199,7 @@ class _CourseShowPageState extends State<CourseShowPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        data.name,
+                        decodeText(data.name),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 19,
@@ -177,7 +210,7 @@ class _CourseShowPageState extends State<CourseShowPage> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: Text(
-                        data.description,
+                        decodeText(data.description),
                         style: TextStyle(fontSize: 15, color: Colors.black),
                       ),
                     ),
@@ -228,25 +261,6 @@ class _CourseShowPageState extends State<CourseShowPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Star Icon
-                              Image.asset("assets/star.png"),
-                              SizedBox(
-                                width: 7,
-                              ),
-                              Text(
-                                "4.4",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              // Coin Icon with Text
-                            ],
-                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -371,16 +385,18 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                           print(
                                               "${data.isOpen}+${data.modules[0].isOpen}+${data.modules[0].lessons[0].isOpen}");
                                           // section.isOpen &&
-                                          if ( data.isOpen) {
+                                          if (section.isOpen && data.isOpen) {
                                             isOpen = item.isOpen;
                                           }
                                           return GestureDetector(
-                                            onTap: () {
+                                            onTap: () async {
                                               // section.isOpen &&
                                               if (data.isOpen &&
-                                                  item.isOpen ) {
+                                                  item.isOpen &&
+                                                  section.isOpen) {
                                                 if (item.type == "lesson") {
-                                                  Navigator.push(
+
+                                                 await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
@@ -390,7 +406,9 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                                                 modul_id:
                                                                     section.id,
                                                                 lesson_id:
-                                                                    item.id)),
+                                                                    item.id),
+                                                        settings: const RouteSettings(arguments: "New message from Second Page!"),
+                                                 ),
                                                   );
                                                 } else if (item.type ==
                                                     "quiz") {
@@ -452,36 +470,57 @@ class _CourseShowPageState extends State<CourseShowPage> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Container(
+                    !data.isOpen
+                        ? Padding(
+                            padding: EdgeInsets.all(15.0),
+                            child: Container(
                         height: 55,
                         width: size.width,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10), // Set the corner radius
-                            ),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "KURSNI XARID QILISH",
+                                style:
+                                    Theme.of(context).elevatedButtonTheme.style,
+                                onPressed: () async {
+                                  var contact =
+                                      await getContactFromPreferences();
+                                  print(contact!.data!.phone);
+                                  openTelegramWithPhone(contact!.data!.phone!);
+                                },
+                                child: Text(
+                                  "KURSNI XARID QILISH",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 19,
-                            ),
-                          ),
+                                    fontSize: 18,
+                                  ),
+                                ),
                         ),
                       ),
-                    ),
+                          )
+                        : SizedBox(),
                   ],
                 );
               }
             }),
       ),
     );
+  }
+
+  Future<void> openTelegramWithPhone(String phone) async {
+    final Uri url = Uri.parse('tg://resolve?phone=$phone');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch Telegram with phone: $phone';
+    }
+  }
+
+  Future<ContactModel?> getContactFromPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('contact');
+    if (userJson != null) {
+      Map<String, dynamic> userMap = jsonDecode(userJson);
+      return ContactModel.fromJson(userMap);
+    }
+    return null;
   }
 }

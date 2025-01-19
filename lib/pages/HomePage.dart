@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:i_med_team/pages/CoursesPage.dart';
 import 'package:i_med_team/pages/MainPage.dart';
-import 'package:i_med_team/pages/ProfilPage.dart';
 import 'package:i_med_team/pages/RatePage.dart';
+
+import 'ProfilPage.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -20,6 +21,7 @@ class _HomepageState extends State<Homepage> {
     Coursespage(),
     ReytingPage(),
     ProfilePage()
+    // ProfilePage()
   ];
 
   void _onItemTapped(int index) {
@@ -31,6 +33,10 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      // appBar: AppBar(
+      // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -71,14 +77,17 @@ class _HomepageState extends State<Homepage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        // Highlighted tab index
-        selectedItemColor: Colors.black,
-        // White for active item
-        unselectedItemColor: Colors.black,
-        // Light white for inactive items
-        backgroundColor: Colors.red[50],
-        // Red background
-        type: BottomNavigationBarType.fixed,
+        // Highlighted tab index Colors.white, //
+        // NavigationBar fon rangi
+        backgroundColor: Colors.white,
+        // NavigationBar fon rangi
+
+        selectedItemColor: Colors.redAccent,
+        // Tanlangan element rangi
+        unselectedItemColor: Colors.grey,
+        // Tanlanmagan element rangi
+        elevation: 8,
+        // type: BottomNavigationBarType.fixed,
         // Fixed style
         iconSize: 28,
         // Icon size

@@ -150,9 +150,9 @@ class _LessonsPageState extends State<LessonsPage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: FutureBuilder<LessonModel>(
           future: _lessonFuture,
           builder: (context, snapshot) {
@@ -202,11 +202,7 @@ class _LessonsPageState extends State<LessonsPage> {
                     width: size.width / 0.9,
                     height: 50,
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          )),
+                      style: Theme.of(context).elevatedButtonTheme.style,
                       onPressed: _endLesson,
                       child: Text(
                         "Keyingi darsga o'tish",

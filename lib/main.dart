@@ -4,14 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:i_med_team/models/lesson_model.dart';
 import 'package:i_med_team/pages/HomePage.dart';
 import 'package:i_med_team/pages/LoginPage.dart';
+import 'package:i_med_team/services/ThemeManager.dart';
+import 'package:i_med_team/services/ThemeProvider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final token = await getToken();
-  runApp(MyApp(
-    isLogginIn: token != null,
-  ));
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: MyApp(
+        isLogginIn: token != null,
+      )));
 }
 
 Future<String?> getToken() async {
@@ -22,7 +29,7 @@ Future<String?> getToken() async {
 class MyApp extends StatelessWidget {
   final bool isLogginIn;
 
-  const MyApp({super.key, required this.isLogginIn});
+  MyApp({super.key, required this.isLogginIn});
 
   // This widget is the root of your application.
   @override
@@ -109,28 +116,58 @@ class MyApp extends StatelessWidget {
 
     var map = jsonDecode(json);
     data = LessonModel.fromJson(map);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
-        useMaterial3: true,
-      ),
       debugShowCheckedModeBanner: false,
+      themeMode: themeProvider.themeMode,
+      theme: ThemeManager.lightTheme,
+      darkTheme: ThemeManager.darkTheme,
       // home: LoginPage(),
       home: isLogginIn ? Homepage() : LoginPage(),
+    );
+  }
+
+  ThemeData _lightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
+        primary: Colors.redAccent,
+        // Asosiy rang (Yorqin qizil)
+        secondary: Colors.redAccent,
+        // Ikkinchi darajali rang
+        surface: Colors.white,
+        // Orqa fon rangi (Oq fon)
+        onSurface: Colors.black,
+        // Matn rangi
+        onPrimary: Colors.white,
+        // Asosiy rangdagi matn rangi (Oq)
+        onSecondary: Colors.white, // Ikkinchi darajali matn
+      ),
+      scaffoldBackgroundColor: Colors.grey[50], // Fon rangi (Kulrang)
+    );
+  }
+
+  // Tungi rejim uchun custom ranglar palitrasi
+  ThemeData _darkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.dark(
+        primary: Colors.red[900]!,
+        // Asosiy rang (Qorong'iroq qizil)
+        secondary: Colors.red[800]!,
+        // Ikkinchi darajali rang
+        surface: Colors.grey[850]!,
+        // Orqa fon rangi (Qorong'iroq kulrang)
+        onSurface: Colors.white,
+        // Matn rangi (Oq)
+        onPrimary: Colors.white,
+        // Asosiy rangdagi matn rangi (Oq)
+        onSecondary: Colors.white, // Ikkinchi darajali matn
+      ),
+      scaffoldBackgroundColor: Colors.grey[900]!, // Tungi fon
     );
   }
 }

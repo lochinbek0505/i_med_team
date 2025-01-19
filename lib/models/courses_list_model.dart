@@ -1,241 +1,161 @@
-class CoursesListModel {
-  CoursesListModel({
-    required String status,
-    required String code,
-    required List<Data70> data,
-  }) {
-    _status = status;
-    _code = code;
-    _data = data;
-  }
+class User {
+  String? firstName;
+  String? lastName;
+  String? image;
 
-  CoursesListModel.fromJson(dynamic json) {
-    _status = json['status'];
-    _code = json['code'];
-    if (json['data'] != null) {
-      _data = [];
-      json['data'].forEach((v) {
-        _data!.add(Data70.fromJson(v));
-      });
-    }
-  }
+  User({this.firstName, this.lastName, this.image});
 
-  String? _status;
-  String? _code;
-  List<Data70>? _data;
-
-  CoursesListModel copyWith({
-    required String status,
-    required String code,
-    required List<Data70> data,
-  }) =>
-      CoursesListModel(
-        status: status ?? _status!,
-        code: code ?? _code!,
-        data: data ?? _data!,
-      );
-
-  String get status => _status!;
-
-  String get code => _code!;
-
-  List<Data70> get data => _data!;
+  User copyWith({String? firstName, String? lastName, String? image}) =>
+      User(firstName: firstName ?? this.firstName,
+          lastName: lastName ?? this.lastName,
+          image: image ?? this.image);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['status'] = _status;
-    map['code'] = _code;
-    if (_data != null) {
-      map['data'] = _data!.map((v) => v.toJson()).toList();
-    }
+    map["first_name"] = firstName;
+    map["last_name"] = lastName;
+    map["image"] = image;
     return map;
   }
-}
 
-/// id : 1
-/// name : "6-sinf"
-/// user : {"first_name":"","last_name":""}
-/// subject : {"name":"Matematika"}
-/// description : "Test matematika"
-/// image : "/media/images/courses/ali.jpg"
-/// price : 60
-/// count_students : 0
-/// created : "25-12-2024 20:12:44"
-
-class Data70 {
-  Data70({
-    required num id,
-    required String name,
-    required User user,
-    required Subject subject,
-    required String description,
-    required String image,
-    required num price,
-    required num countStudents,
-    required String created,
-  }) {
-    _id = id;
-    _name = name;
-    _user = user;
-    _subject = subject;
-    _description = description;
-    _image = image;
-    _price = price;
-    _countStudents = countStudents;
-    _created = created;
-  }
-
-  Data70.fromJson(dynamic json) {
-    _id = json['id'];
-    _name = json['name'];
-    _user = json['user'] != null ? User.fromJson(json['user']) : null;
-    _subject =
-        json['subject'] != null ? Subject.fromJson(json['subject']) : null;
-    _description = json['description'];
-    _image = json['image'];
-    _price = json['price'];
-    _countStudents = json['count_students'];
-    _created = json['created'];
-  }
-
-  num? _id;
-  String? _name;
-  User? _user;
-  Subject? _subject;
-  String? _description;
-  String? _image;
-  num? _price;
-  num? _countStudents;
-  String? _created;
-
-  Data70 copyWith({
-    required num id,
-    required String name,
-    required User user,
-    required Subject subject,
-    required String description,
-    required String image,
-    required num price,
-    required num countStudents,
-    required String created,
-  }) =>
-      Data70(
-        id: id ?? _id!,
-        name: name ?? _name!,
-        user: user ?? _user!,
-        subject: subject ?? _subject!,
-        description: description ?? _description!,
-        image: image ?? _image!,
-        price: price ?? _price!,
-        countStudents: countStudents ?? _countStudents!,
-        created: created ?? _created!,
-      );
-
-  num get id => _id!;
-
-  String get name => _name!;
-
-  User get user => _user!;
-
-  Subject get subject => _subject!;
-
-  String get description => _description!;
-
-  String get image => _image!;
-
-  num get price => _price!;
-
-  num get countStudents => _countStudents!;
-
-  String get created => _created!;
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['id'] = _id;
-    map['name'] = _name;
-    if (_user != null) {
-      map['user'] = _user!.toJson();
-    }
-    if (_subject != null) {
-      map['subject'] = _subject!.toJson();
-    }
-    map['description'] = _description;
-    map['image'] = _image;
-    map['price'] = _price;
-    map['count_students'] = _countStudents;
-    map['created'] = _created;
-    return map;
+  User.fromJson(dynamic json){
+    firstName = json["first_name"];
+    lastName = json["last_name"];
+    image = json["image"];
   }
 }
-
-/// name : "Matematika"
 
 class Subject {
-  Subject({
-    required String name,
-  }) {
-    _name = name;
-  }
+  num? id;
+  String? name;
 
-  Subject.fromJson(dynamic json) {
-    _name = json['name'];
-  }
+  Subject({this.id, this.name});
 
-  String? _name;
-
-  Subject copyWith({
-    required String name,
-  }) =>
-      Subject(
-        name: name ?? _name!,
-      );
-
-  String get name => _name!;
+  Subject copyWith({num? id, String? name}) =>
+      Subject(id: id ?? this.id, name: name ?? this.name);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['name'] = _name;
+    map["id"] = id;
+    map["name"] = name;
     return map;
+  }
+
+  Subject.fromJson(dynamic json){
+    id = json["id"];
+    name = json["name"];
   }
 }
 
-/// first_name : ""
-/// last_name : ""
+class Data70 {
+  num? id;
+  String? name;
+  User? user;
+  Subject? subject;
+  String? description;
+  String? image;
+  num? price;
+  num? percentage;
+  num? length;
+  num? countModules;
+  num? countLessons;
+  num? countStudents;
+  bool? isOpen;
+  String? created;
 
-class User {
-  User({
-    required String firstName,
-    required String lastName,
-  }) {
-    _firstName = firstName;
-    _lastName = lastName;
-  }
+  Data70(
+      {this.id, this.name, this.user, this.subject, this.description, this.image, this.price, this.percentage, this.length, this.countModules, this.countLessons, this.countStudents, this.isOpen, this.created});
 
-  User.fromJson(dynamic json) {
-    _firstName = json['first_name'];
-    _lastName = json['last_name'];
-  }
-
-  String? _firstName;
-  String? _lastName;
-
-  User copyWith({
-    required String firstName,
-    required String lastName,
-  }) =>
-      User(
-        firstName: firstName ?? _firstName!,
-        lastName: lastName ?? _lastName!,
-      );
-
-  String get firstName => _firstName!;
-
-  String get lastName => _lastName!;
+  Data70 copyWith(
+      {num? id, String? name, User? user, Subject? subject, String? description, String? image, num? price, num? percentage, num? length, num? countModules, num? countLessons, num? countStudents, bool? isOpen, String? created}) =>
+      Data70(id: id ?? this.id,
+          name: name ?? this.name,
+          user: user ?? this.user,
+          subject: subject ?? this.subject,
+          description: description ?? this.description,
+          image: image ?? this.image,
+          price: price ?? this.price,
+          percentage: percentage ?? this.percentage,
+          length: length ?? this.length,
+          countModules: countModules ?? this.countModules,
+          countLessons: countLessons ?? this.countLessons,
+          countStudents: countStudents ?? this.countStudents,
+          isOpen: isOpen ?? this.isOpen,
+          created: created ?? this.created);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['first_name'] = _firstName;
-    map['last_name'] = _lastName;
+    map["id"] = id;
+    map["name"] = name;
+    if (user != null) {
+      map["user"] = user?.toJson();
+    }
+    if (subject != null) {
+      map["subject"] = subject?.toJson();
+    }
+    map["description"] = description;
+    map["image"] = image;
+    map["price"] = price;
+    map["percentage"] = percentage;
+    map["length"] = length;
+    map["count_modules"] = countModules;
+    map["count_lessons"] = countLessons;
+    map["count_students"] = countStudents;
+    map["is_open"] = isOpen;
+    map["created"] = created;
     return map;
+  }
+
+  Data70.fromJson(dynamic json){
+    id = json["id"];
+    name = json["name"];
+    user = json["user"] != null ? User.fromJson(json["user"]) : null;
+    subject =
+    json["subject"] != null ? Subject.fromJson(json["subject"]) : null;
+    description = json["description"];
+    image = json["image"];
+    price = json["price"];
+    percentage = json["percentage"];
+    length = json["length"];
+    countModules = json["count_modules"];
+    countLessons = json["count_lessons"];
+    countStudents = json["count_students"];
+    isOpen = json["is_open"];
+    created = json["created"];
+  }
+}
+
+class CoursesListModel {
+  String? status;
+  String? code;
+  List<Data70>? data;
+
+  CoursesListModel({this.status, this.code, this.data});
+
+  CoursesListModel copyWith(
+      {String? status, String? code, List<Data70>? dataList}) =>
+      CoursesListModel(status: status ?? this.status,
+          code: code ?? this.code,
+          data: dataList ?? this.data);
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map["status"] = status;
+    map["code"] = code;
+    if (data != null) {
+      map["data"] = data?.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+
+  CoursesListModel.fromJson(dynamic json){
+    status = json["status"];
+    code = json["code"];
+    if (json["data"] != null) {
+      data = [];
+      json["data"].forEach((v) {
+        data?.add(Data70.fromJson(v));
+      });
+    }
   }
 }

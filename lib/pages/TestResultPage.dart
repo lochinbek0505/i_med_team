@@ -17,7 +17,7 @@ class _TestResultPageState extends State<TestResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -54,15 +54,9 @@ class _TestResultPageState extends State<TestResultPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Container(
                     width: double.infinity,
+                    height: 55,
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                      style: Theme.of(context).elevatedButtonTheme.style,
                       onPressed: () {
                         // Davom etish action
                         Navigator.pop(context);

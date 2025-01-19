@@ -219,9 +219,9 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent,
         title: Center(
           child: Text(
             'Matematikadan imtihon',
@@ -370,21 +370,18 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
               ),
             ),
             if (_questions.isEmpty)
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  button_click();
-                },
-                child: Center(
-                  child: Text(
-                    'KEYINGISI',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+              Container(
+                height: 55,
+                child: ElevatedButton(
+                  style: Theme.of(context).elevatedButtonTheme.style,
+                  onPressed: () {
+                    button_click();
+                  },
+                  child: Center(
+                    child: Text(
+                      'KEYINGISI',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
                 ),
               ),

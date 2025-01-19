@@ -39,7 +39,7 @@ class CustomDropdown extends StatelessWidget {
             .map((Data70 item) => DropdownMenuItem(
                   value: item,
                   child: Text(
-                    item.name,
+                    item.name!,
                     maxLines: 1,
                   ),
                 ))
