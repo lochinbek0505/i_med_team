@@ -92,18 +92,18 @@ class _ReytingPageState extends State<ReytingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          'Peshqadamlar',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        // backgroundColor: Colors.redAccent,
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Peshqadamlar',
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: 20,
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      //   // backgroundColor: Colors.redAccent,
+      //   centerTitle: true,
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/end_test_model.dart';
 import 'package:i_med_team/models/lesson_model.dart';
+import 'package:i_med_team/pages/WritableQuestion.dart';
 import 'package:i_med_team/pages/test_page.dart';
 
 import '../models/end_model.dart';
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 import 'MultiSelectPage.dart';
 import 'TestResultPage.dart';
 
@@ -67,11 +69,11 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
   void calculate_prs() {
     prs=(index + 1) / (len);
   }
+  var wait=true;
 
   Future<void> button_click() async {
     // Wait for a specific duration (e.g., 3 seconds)
     if(_questions.isEmpty && _answers.isEmpty){
-      await Future.delayed(Duration(seconds: 1));
 
       setState(() {
         if (check) {
@@ -79,7 +81,10 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
         }
         if (quizModel.data!.quiz!.questionsList!.length > index + 1) {
           index++;
+          setState(() {
+            check=true;
 
+          });
           switch (quizModel.data!.quiz!.questionsList![index].type) {
             case "one_select":
               {
@@ -116,7 +121,7 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MultiSelectPage(
+                      builder: (context) => WritableQuestion(
                         index: index,
                         course_id: widget.course_id,
                         module_id: widget.module_id,
@@ -129,6 +134,7 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
 
             case "matchable":
               {
+
                 _questionsToAnswers.clear();
                 initilize();
               }
@@ -151,6 +157,10 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
         }
       });
     }else{
+      setState(() {
+        check=true;
+
+      });
       ScaffoldMessenger.of(context)
           .showSnackBar(
           const SnackBar(
@@ -161,6 +171,8 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
     }
   }
   Future<void> end(EndTestModel model)async {
+    LoadingDialog.show_dialog(context);
+
     _endLesson();
     _endTest(model);
   }
@@ -171,7 +183,10 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
         modul: widget.module_id,
         lesson: widget.lesson_id));
     if (data.status == "success") {
+      setState(() {
+        check=true;
 
+      });
     }
   }
 
@@ -183,7 +198,10 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
       score: model.score,
       percent: model.percent,
     ));
+    LoadingDialog.hide_dialog(context);
+
     if (data.status == "success") {
+
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -193,6 +211,9 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
                   incorrect: (quizModel.data!.quiz!.questionsList!.length -
                           model.score!)
                       .toString())));
+    }
+    else{
+      print(data.status);
     }
   }
 
@@ -374,9 +395,10 @@ class _MatchableQuestionState extends State<MatchableQuestion> {
                 height: 55,
                 child: ElevatedButton(
                   style: Theme.of(context).elevatedButtonTheme.style,
-                  onPressed: () {
+                  onPressed:check? () {
+                    check=false;
                     button_click();
-                  },
+                  }:null,
                   child: Center(
                     child: Text(
                       'KEYINGISI',

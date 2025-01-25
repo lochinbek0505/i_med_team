@@ -3,17 +3,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:i_med_team/pages/LoginPage.dart';
+import 'package:i_med_team/pages/OnboardingPage.dart';
 import 'package:i_med_team/pages/RewardsPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../models/contact_model.dart';
 import '../models/profile_model.dart';
 import '../services/ApiService.dart';
-import '../services/ThemeProvider.dart';
+import 'ShowMyLessons.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -349,6 +350,9 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
+    apiService.profile().then((value) {
+      saveUserToPreferences(value);
+    });
     getUserFromPreferences().then((value) {
       setState(() {
         profil = value!;
@@ -372,6 +376,25 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       return text; // Xato bo‘lsa, asl matn qaytariladi
     }
+  }
+
+  Future<void> openTelegramWithPhone(String phone) async {
+    final Uri url = Uri.parse('tg://resolve?phone=$phone');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch Telegram with phone: $phone';
+    }
+  }
+
+  Future<ContactModel?> getContactFromPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('contact');
+    if (userJson != null) {
+      Map<String, dynamic> userMap = jsonDecode(userJson);
+      return ContactModel.fromJson(userMap);
+    }
+    return null;
   }
 
   Future<void> pickImage(
@@ -400,11 +423,43 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Hisobdan chiqish !"),
+          content: Text("Hisobdan chiqishni xohlaysizmi ?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Bekor qilish"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                clearSharedPreferences();
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OnboardingScreen()));
+                print("User logged out");
+              },
+              child: Text("Hisobdan chiqish"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void edit_profil() {
     _firstNameController.text = profil!.data!.firstName.toString();
     _lastNameController.text = profil!.data!.lastName.toString();
     _middleNameController.text = profil!.data!.middleName.toString();
-    selectedRegion = profil!.data!.city.toString();
+    selectedRegion = decodeText(profil!.data!.city.toString());
     selectedDistrict =
         utf8.decode(profil!.data!.town.toString().runes.toList());
 
@@ -580,180 +635,247 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        // backgroundColor: Colors.redAccent,
-        title: const Center(
-          child: Text(
-            'Profil',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        elevation: 0,
-      ),
+      // appBar: AppBar(
+      //   // backgroundColor: Colors.redAccent,
+      //   title: const Center(
+      //     child: Text(
+      //       'Profil',
+      //       style: TextStyle(
+      //         color: Colors.white,
+      //         fontWeight: FontWeight.bold,
+      //       ),
+      //     ),
+      //   ),
+      //   elevation: 0,
+      // ),
       body: profil == null
           ? CircularProgressIndicator()
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  // Profile Section
-                  Column(
-                    children: [
-                Stack(
+          : Column(
+              children: [
+                const SizedBox(height: 20),
+                // Profile Section
+                Column(
                   children: [
-                    CircleAvatar(
-                      radius: 60,
-                            backgroundColor: Colors.white,
-                            backgroundImage: profil!.data!.image != null
-                                ? NetworkImage(
-                                    profil!.data!.image.toString(),
-                                  )
-                                : AssetImage(
-                                    "assets/teacher.png"), // Placeholder
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: GestureDetector(
-                              onTap: edit_profil,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.black87,
-                                  size: 25,
-                                ),
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.white,
+                          backgroundImage: profil!.data!.image != null
+                              ? NetworkImage(
+                                  profil!.data!.image.toString(),
+                                )
+                              : AssetImage("assets/teacher.png"), // Placeholder
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: edit_profil,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.black87,
+                                size: 25,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        '${profil!.data!.firstName} ${profil!.data!.lastName}',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      '${profil!.data!.firstName} ${profil!.data!.lastName}',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+          // Profile Options
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (builder) => Rewardspage()));
+            },
+
+            child: _buildProfileOption(
+              link: "assets/business.png",
+              title: "Natijalar",
+              onTap: () {},
             ),
+          ),
 
-            const SizedBox(height: 20),
-            // Profile Options
-            _buildProfileOption(
-                    link: "assets/map.png",
-                    title:
-                        "${decodeText(profil!.data!.city.toString())} viloyati ${decodeText(profil!.data!.town.toString())} tumani",
-                    onTap: () {},
-                    showArrow: false,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (builder) => Rewardspage()));
-                    },
-                    child: _buildProfileOption(
-                      link: "assets/business.png",
-                      title: "Natijalar",
-                      onTap: () {},
-                    ),
-                  ),
+                _buildProfileOption(
+                  link: "assets/clock.png",
+                  title: profil!.data!.duration != null
+                      ? "${profil!.data!.duration! ~/ 60} soat ${profil!.data!.duration! % 60} minut"
+                      : "Faollik mavjud emas",
+                  onTap: () {},
+                  showArrow: false,
+                ),
 
-                  _buildProfileOption(
-                    link: "assets/clock.png",
-                    title: profil!.data!.duration != null
-                        ? "${profil!.data!.duration! ~/ 60} soat ${profil!.data!.duration! % 60} minut"
-                        : "Faollik mavjud emas",
-                    onTap: () {},
-                    showArrow: false,
-                  ),
-                  _buildDarkModeToggle(context),
-                  _buildProfileOption(
-                    link: "assets/customer.png",
-                    title: "Admin bilan bog'lanish",
-                    onTap: () {},
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      clearSharedPreferences();
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
-                    },
-                    child: _buildProfileOption(
-                      link: "assets/logout 1.png",
-                      title: "Hisobdan chiqish",
-                      onTap: () {},
-                      isLogout: true,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-          ],
-        ),
-      ),
+                Expanded(
+                  child: FutureBuilder(
+                      future: apiService.my_courses_list(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.dataList!.isEmpty) {
+                          return const Center(child: Text('No items found.'));
+                        } else {
+                          var courses = snapshot.data!.dataList;
+
+                          return ListView.builder(
+                              itemCount: courses!.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 15),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ShowMyLessons(
+                                                id: courses[index].id)),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 340,
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        // Light beige color
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Left Column (Text and Progress Bar)
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                // Title
+                                                Text(
+                                                  courses![index].name!,
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+
+                                                // Subtitle
+                                                Text(
+                                                  "${courses[index].user!.firstName} ${courses[index].user!.lastName}",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.black54,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+
+                                                // Progress Bar and Percentage
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                        child:
+                                                            LinearProgressIndicator(
+                                                          value: courses[index]
+                                                                  .percentage!
+                                                                  .toDouble() /
+                                                              100,
+                                                          // 0% progress
+                                                          backgroundColor:
+                                                              Colors.grey[300],
+                                                          color: Colors.green,
+                                                          minHeight: 6,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      "${courses[index].percentage!.toInt()}%",
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.green,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          // Circular Avatar
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            // Circular shape
+                                            child: courses[index].user!.image ==
+                                                    null
+                                                ? Image.asset(
+                                                    "assets/teacher.png",
+                                                    height: 60,
+                                                    width: 60,
+                                                  )
+                                                : Image.network(
+                                                    courses[index].user!.image,
+                                                    // Replace with the actual image URL
+                                                    width: 60,
+                                                    height: 60,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              });
+                        }
+                      }),
+                ),
+              ],
+            ),
 
       // Bottom Navigation Bar
-    );
-  }
-
-  Widget _buildDarkModeToggle(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Image.asset("assets/day_mode.png", height: 24),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              "Qorong'u rejim",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          Switch(
-            value: themeProvider.themeMode == ThemeMode.dark,
-            onChanged: (bool value) {
-              themeProvider.toggleTheme(value);
-            },
-            activeColor: Colors.orange,
-          ),
-        ],
-      ),
     );
   }
 
@@ -771,15 +893,7 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [

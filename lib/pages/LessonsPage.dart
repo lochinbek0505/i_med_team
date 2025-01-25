@@ -3,23 +3,23 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:i_med_team/models/end_model.dart';
-import 'package:i_med_team/models/lesson_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-
+import '../models/end_model.dart';
+import '../models/lesson_model.dart';
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 
 class LessonsPage extends StatefulWidget {
-  final num course_id;
-  final num modul_id;
-  final num lesson_id;
+  final num courseId;
+  final num moduleId;
+  final num lessonId;
 
   const LessonsPage({
     Key? key,
-    required this.course_id,
-    required this.modul_id,
-    required this.lesson_id,
+    required this.courseId,
+    required this.moduleId,
+    required this.lessonId,
   }) : super(key: key);
 
   @override
@@ -28,28 +28,26 @@ class LessonsPage extends StatefulWidget {
 
 class _LessonsPageState extends State<LessonsPage> {
   late YoutubePlayerController? _youtubeController;
-  bool _isDownloading = false;
-  String _localFilePath = '';
-  bool _isLoading = true;
-  final ApiService apiService = ApiService('https://oztech.uz/api/v1');
   late Future<LessonModel> _lessonFuture;
+  bool _isDownloading = false;
+  String? _localFilePath;
+  final ApiService _apiService = ApiService('https://oztech.uz/api/v1');
 
   @override
   void initState() {
     super.initState();
-    _lessonFuture = apiService.show_lesson(
-        widget.course_id, widget.modul_id, widget.lesson_id);
+    _lessonFuture = _apiService.show_lesson(
+      widget.courseId,
+      widget.moduleId,
+      widget.lessonId,
+    );
     _initializeLesson();
   }
 
-  void _endLesson() async {
-    var data = await apiService.end_lesson(EndModel(
-        course: widget.course_id,
-        modul: widget.modul_id,
-        lesson: widget.lesson_id));
-    if (data.status == "success") {
-      Navigator.pop(context);
-    }
+  @override
+  void dispose() {
+    _youtubeController?.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeLesson() async {
@@ -63,24 +61,40 @@ class _LessonsPageState extends State<LessonsPage> {
           autoPlay: false,
           controlsVisibleAtStart: true,
           loop: true,
-          forceHD: true,
         ),
       );
 
       await _downloadPdfIfNeeded(lesson);
     } catch (e) {
       debugPrint('Error initializing lesson: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
-  @override
-  void dispose() {
-    _youtubeController?.dispose();
-    super.dispose();
+  Future<void> _downloadPdfIfNeeded(LessonModel lesson) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/${lesson.data!.name}.pdf';
+      final file = File(filePath);
+
+      if (!file.existsSync()) {
+        setState(() => _isDownloading = true);
+        final dio = Dio();
+        await dio.download(
+          'https://oztech.uz${lesson.data!.resource}',
+          filePath,
+        );
+        debugPrint('PDF downloaded to $filePath');
+      }
+
+      setState(() => _localFilePath = filePath);
+    } catch (e) {
+      debugPrint('Error downloading PDF: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to download the file.')),
+      );
+    } finally {
+      setState(() => _isDownloading = false);
+    }
   }
 
   String _extractVideoId(String url) {
@@ -88,8 +102,7 @@ class _LessonsPageState extends State<LessonsPage> {
       final uri = Uri.parse(url);
       if (uri.host == 'youtu.be') {
         return uri.pathSegments.first;
-      } else if (uri.host.contains('youtube.com') &&
-          uri.queryParameters['v'] != null) {
+      } else if (uri.host.contains('youtube.com') && uri.queryParameters['v'] != null) {
         return uri.queryParameters['v']!;
       }
     } catch (e) {
@@ -98,121 +111,91 @@ class _LessonsPageState extends State<LessonsPage> {
     throw Exception('Invalid YouTube URL');
   }
 
-  Future<void> _downloadPdfIfNeeded(LessonModel lesson) async {
+  void _endLesson() async {
+    LoadingDialog.show_dialog(context);
+
     try {
-      final directory = await getExternalStorageDirectory();
-      if (directory == null) {
-        throw Exception('External storage not available.');
-      }
+      final response = await _apiService.end_lesson(EndModel(
+        course: widget.courseId,
+        modul: widget.moduleId,
+        lesson: widget.lessonId,
+      ));
+      LoadingDialog.hide_dialog(context);
 
-      final customFolder = Directory('${directory.path}/IMedTeam');
-      if (!customFolder.existsSync()) {
-        customFolder.createSync(recursive: true);
-      }
-
-      final filePath = '${customFolder.path}/${lesson.data!.name}';
-      final file = File(filePath);
-
-      if (!file.existsSync()) {
-        setState(() {
-          _isDownloading = true;
-        });
-
-        final dio = Dio();
-        await dio.download(
-            "https://oztech.uz${lesson.data!.resource}", filePath);
-
-        setState(() {
-          _localFilePath = filePath;
-        });
-
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('File downloaded to: $filePath')),
-        // );
-      } else {
-        setState(() {
-          _localFilePath = filePath;
-        });
+      if (response.status == 'success') {
+        Navigator.pop(context, 'refresh');
       }
     } catch (e) {
-      debugPrint('Error downloading PDF: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to download the file.')),
-      );
-    } finally {
-      setState(() {
-        _isDownloading = false;
-      });
+      LoadingDialog.hide_dialog(context);
+      debugPrint('Error ending lesson: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    var size=MediaQuery.of(context).size;
     return Scaffold(
-      // backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        // backgroundColor: Colors.redAccent,
         title: FutureBuilder<LessonModel>(
           future: _lessonFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const Text('Loading...');
             } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (!snapshot.hasData) {
-              return const Text('No data found.');
+              return const Text('Error loading lesson');
             } else {
-              return Text(
-                snapshot.data!.data!.name!,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-              );
+              return Text(snapshot.data?.data?.name ?? 'Lesson');
             }
           },
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                YoutubePlayerBuilder(
-                  player: YoutubePlayer(controller: _youtubeController!),
-                  builder: (context, player) => player,
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: _isDownloading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _localFilePath.isNotEmpty
-                          ? PDFView(
-                              filePath: _localFilePath,
-                              enableSwipe: true,
-                            )
-                          : const Center(
-                              child: Text('Unable to load document')),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Container(
-                    width: size.width / 0.9,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: Theme.of(context).elevatedButtonTheme.style,
-                      onPressed: _endLesson,
-                      child: Text(
-                        "Keyingi darsga o'tish",
-                        style: TextStyle(color: Colors.white, fontSize: 19),
-                      ),
+      body: FutureBuilder<LessonModel>(
+        future: _lessonFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('No data found'));
+          }
+
+          return Column(
+            children: [
+              YoutubePlayerBuilder(
+                player: YoutubePlayer(controller: _youtubeController!),
+                builder: (context, player) => player,
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: _isDownloading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _localFilePath != null
+                    ? PDFView(
+                  filePath: _localFilePath!,
+                  enableSwipe: true,
+                )
+                    : const Center(child: Text('Unable to load document')),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child:Container(
+                  width: size.width / 0.9,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: Theme.of(context).elevatedButtonTheme.style,
+                    onPressed: _endLesson,
+                    child: Text(
+                      "Keyingi darsga o'tish",
+                      style: TextStyle(color: Colors.white, fontSize: 19),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

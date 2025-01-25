@@ -5,10 +5,11 @@ class ThemeManager {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primarySwatch: Colors.red,
-    scaffoldBackgroundColor: Colors.grey.shade100,
+    scaffoldBackgroundColor: Colors.grey.shade200,
     // Asosiy fon rangi
+
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.redAccent, // AppBar fon rangi
+      backgroundColor: Colors.red, // AppBar fon rangi
       foregroundColor: Colors.white, // Matn rangi
       elevation: 4, // AppBar soyasi
     ),
@@ -19,9 +20,13 @@ class ThemeManager {
         fontWeight: FontWeight.bold,
       ),
     ),
+    drawerTheme: DrawerThemeData(
+      backgroundColor: Colors.white, // Drawer fon rangi
+    ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.redAccent, // Tugma foni rangi
+        backgroundColor: Colors.red,
+        // Tugma foni rangi
         foregroundColor: Colors.white, // Matn rangi
         textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
         shape: RoundedRectangleBorder(
@@ -45,6 +50,9 @@ class ThemeManager {
       backgroundColor: Color(0xff5a0202), // AppBar fon rangi
       foregroundColor: Colors.white, // Matn rangi
       elevation: 4, // AppBar soyasi
+    ),
+    drawerTheme: DrawerThemeData(
+      backgroundColor: Colors.grey.shade400, // Drawer fon rangi
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(

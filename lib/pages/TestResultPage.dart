@@ -59,7 +59,7 @@ class _TestResultPageState extends State<TestResultPage> {
                       style: Theme.of(context).elevatedButtonTheme.style,
                       onPressed: () {
                         // Davom etish action
-                        Navigator.pop(context);
+                        Navigator.pop(context, 'refresh');
                       },
                       child: Text(
                         'DAVOM ETISH',

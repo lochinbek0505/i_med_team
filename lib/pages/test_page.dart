@@ -6,6 +6,7 @@ import 'package:i_med_team/pages/WritableQuestion.dart';
 import '../models/end_model.dart';
 import '../models/end_test_model.dart';
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 import 'MatchableQuestion.dart';
 import 'MultiSelectPage.dart';
 
@@ -163,6 +164,8 @@ class _QuestionPageState extends State<QuestionPage> {
   }
 
   Future<void> end(EndTestModel model) async {
+    LoadingDialog.show_dialog(context);
+
     _endLesson();
     _endTest(model);
   }
@@ -183,6 +186,8 @@ class _QuestionPageState extends State<QuestionPage> {
       score: model.score,
       percent: model.percent,
     ));
+    LoadingDialog.hide_dialog(context);
+
     if (data.status == "success") {
       Navigator.pushReplacement(
           context,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/register_request.dart';
+import 'package:i_med_team/pages/CodeVerifyPage.dart';
+import 'package:i_med_team/pages/LoginPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -226,20 +230,12 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    phoneController.addListener(() {
-      if (!phoneController.text.startsWith("+998")) {
-        // Force the prefix "+998"
-        phoneController.text = "+998";
-        phoneController.selection = TextSelection.fromPosition(
-          TextPosition(offset: phoneController.text.length),
-        );
-      }
-    });
   }
 
   void handRegister() async {
     // var user=RegisterRequest(phone: , firstName: firstNameController.text, lastName: lastController.text, middleName: middleController.text, city: selectedRegion.toString(), town: selectedDistrict.toString(), password: passwordController.text);
     // var response=await apiService.register_request(user);
+    LoadingDialog.show_dialog(context);
 
     var phone = phoneController.text.trim();
     final first_name = firstNameController.text.trim();
@@ -262,7 +258,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       return;
     }
-
+    var prof = await getProf();
     setState(() {
       isLoading = true;
     });
@@ -275,14 +271,24 @@ class _RegisterPageState extends State<RegisterPage> {
           middleName: middle_name,
           city: region,
           town: district,
-          password: password);
+        password: password,
+        professional: prof!,
+      );
+      await saveEmail(phone);
+      await saveCheck("1");
       final success = await apiService.register_request(user);
+      print("IDSKJNSDVBSDIVBDSIOVNDJKKJBVFJKFKVJJBUCYNSVIBUIGFEV<Wecwvtewvbyi");
+      print(success.status);
+      print(success.code);
+      print(success.data);
+      LoadingDialog.hide_dialog(context);
 
       if (success.status == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Register successful')),
         );
-        Navigator.pop(context);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (builder) => CodeVerificationPage()));
         // Navigator.pop(context);
         // Navigate to another page (e.g., HomePage)
       } else {
@@ -291,6 +297,10 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       }
     } catch (e) {
+      LoadingDialog.hide_dialog(context);
+
+      print("IDSKJNSDVBSDIVBDSIOVNDJKKJBVFJKFKVJJBUCYNSVIBUIGFEV<Wecwvtewvbyi");
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed: $e')),
       );
@@ -299,6 +309,21 @@ class _RegisterPageState extends State<RegisterPage> {
         isLoading = false;
       });
     }
+  }
+
+  Future<String?> getProf() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('proff');
+  }
+
+  Future<void> saveEmail(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', token);
+  }
+
+  Future<void> saveCheck(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('check', token);
   }
 
   // Tuman
@@ -331,6 +356,28 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Image.asset(
+                      "assets/onboard1.png",
+                      height: 100,
+                      width: 100,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "IMedTeam",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
                     TextField(
                       controller: firstNameController,
                       decoration: InputDecoration(
@@ -357,9 +404,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(height: 25),
                     TextField(
                       controller: phoneController,
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: 'Telefon raqamingiz',
+                        labelText: 'Emailingiz',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -446,7 +493,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builder) => LoginPage()));
                       },
                       child: Text(
                         'Hisobga kirish',

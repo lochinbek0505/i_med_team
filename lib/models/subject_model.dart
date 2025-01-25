@@ -1,94 +1,64 @@
-class SubjectModel {
-  SubjectModel({
-    required String status,
-    required String code,
-    required List<Subject50> data,
-  }) {
-    _status = status;
-    _code = code;
-    _data = data;
-  }
+class Subject50 {
+  num? id;
+  String? name;
+  String? image;
+  num? courses;
 
-  SubjectModel.fromJson(dynamic json) {
-    _status = json['status'];
-    _code = json['code'];
-    if (json['data'] != null) {
-      _data = [];
-      json['data'].forEach((v) {
-        _data!.add(Subject50.fromJson(v));
-      });
-    }
-  }
+  Subject50({this.id, this.name, this.image, this.courses});
 
-  String? _status;
-  String? _code;
-  List<Subject50>? _data;
-
-  SubjectModel copyWith({
-    required String status,
-    required String code,
-    required List<Subject50> data,
-  }) =>
-      SubjectModel(
-        status: status ?? _status!,
-        code: code ?? _code!,
-        data: data ?? _data!,
-      );
-
-  String get status => _status!;
-
-  String get code => _code!;
-
-  List<Subject50> get data => _data!;
+  Subject50 copyWith({num? id, String? name, String? image, num? courses}) =>
+      Subject50(id: id ?? this.id,
+          name: name ?? this.name,
+          image: image ?? this.image,
+          courses: courses ?? this.courses);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['status'] = _status;
-    map['code'] = _code;
-    if (_data != null) {
-      map['data'] = _data!.map((v) => v.toJson()).toList();
-    }
+    map["id"] = id;
+    map["name"] = name;
+    map["image"] = image;
+    map["courses"] = courses;
     return map;
+  }
+
+  Subject50.fromJson(dynamic json){
+    id = json["id"];
+    name = json["name"];
+    image = json["image"];
+    courses = json["courses"];
   }
 }
 
-/// id : 1
-/// name : "Sotsologiya"
+class SubjectModel {
+  String? status;
+  String? code;
+  List<Subject50>? dataList;
 
-class Subject50 {
-  Subject50({
-    required num id,
-    required String name,
-  }) {
-    _id = id;
-    _name = name;
-  }
+  SubjectModel({this.status, this.code, this.dataList});
 
-  Subject50.fromJson(dynamic json) {
-    _id = json['id'];
-    _name = json['name'];
-  }
-
-  num? _id;
-  String? _name;
-
-  Subject50 copyWith({
-    required num id,
-    required String name,
-  }) =>
-      Subject50(
-        id: id ?? _id!,
-        name: name ?? _name!,
-      );
-
-  num get id => _id!;
-
-  String get name => _name!;
+  SubjectModel copyWith({String? status, String? code, List<Subject50>? dataList}) =>
+      SubjectModel(status: status ?? this.status,
+          code: code ?? this.code,
+          dataList: dataList ?? this.dataList);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['id'] = _id;
-    map['name'] = _name;
+    map["status"] = status;
+    map["code"] = code;
+    if (dataList != null) {
+      map["data"] = dataList?.map((v) => v.toJson()).toList();
+    }
     return map;
+  }
+
+  SubjectModel.fromJson(dynamic json){
+    status = json["status"];
+    code = json["code"];
+    if (json["data"] != null) {
+      dataList = [];
+      json["data"].forEach((v) {
+        dataList?.add(Subject50.fromJson(v));
+      });
+    }
   }
 }

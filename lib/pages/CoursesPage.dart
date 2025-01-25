@@ -35,15 +35,15 @@ class _CoursespageState extends State<Coursespage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        title: Center(
-          child: Text(
-            "Mening kurslarim",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+      //   title: Center(
+      //     child: Text(
+      //       "Mening kurslarim",
+      //       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      //     ),
+      //   ),
+      // ),
       body: FutureBuilder(
           future: apiService.my_courses_list(),
           builder: (context, snapshot) {

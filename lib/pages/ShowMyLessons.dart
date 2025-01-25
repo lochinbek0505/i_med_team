@@ -54,7 +54,9 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
     switch (data.data!.quiz!.questionsList![0].type) {
       case "one_select":
         {
-          Navigator.push(
+          // If the result is 'refresh', update the message
+
+          var result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => QuestionPage(
@@ -65,11 +67,17 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                   lesson_id: lesson_id,
                   data: data,
                 ),
+
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
       case "many_select":
         {
-          Navigator.push(
+          var result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MultiSelectPage(
@@ -81,10 +89,15 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                   data: data,
                 ),
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
       case "writable":
         {
-          Navigator.push(
+          var result = Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => WritableQuestion(
@@ -96,11 +109,16 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                   data: data,
                 ),
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
 
       case "matchable":
         {
-          Navigator.push(
+          var result = Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MatchableQuestion(
@@ -112,6 +130,11 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                   data: data,
                 ),
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
     }
   }
@@ -167,14 +190,19 @@ class _ShowMyLessonsState extends State<ShowMyLessons> {
                     onTap: () {
                       if (item.isOpened!) {
                         if (item.lesson!.type == "lesson") {
-                          Navigator.push(
+                      var result=  Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => LessonsPage(
-                                    course_id: widget.id!,
-                                    modul_id: item.id!.toInt(),
-                                    lesson_id: item.lesson!.id)),
+                                    courseId: widget.id!,
+                                    moduleId: item.id!.toInt(),
+                                    lessonId: item.lesson!.id)),
                           );
+                      if (result == 'refresh') {
+                        setState(() {
+                          _refreshItems();
+                        });
+                      }
                         } else if (item.lesson!.type == "quiz") {
                           quiz_navigation(
                               course_id: widget.id!,

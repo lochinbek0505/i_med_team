@@ -6,6 +6,7 @@ import 'package:i_med_team/pages/test_page.dart';
 import '../models/end_model.dart';
 import '../models/end_test_model.dart';
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 import 'MultiSelectPage.dart';
 import 'TestResultPage.dart';
 
@@ -171,6 +172,8 @@ var len;
   }
   }
   Future<void> end(EndTestModel model)async {
+    LoadingDialog.show_dialog(context);
+
     _endLesson();
     _endTest(model);
   }
@@ -192,6 +195,7 @@ var len;
       score: model.score,
       percent: model.percent,
     ));
+    LoadingDialog.hide_dialog(context);
     if (data.status == "success") {
 
       Navigator.pushReplacement(

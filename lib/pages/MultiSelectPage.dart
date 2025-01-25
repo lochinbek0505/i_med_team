@@ -6,6 +6,7 @@ import 'package:i_med_team/pages/test_page.dart';
 import '../models/end_model.dart';
 import '../models/end_test_model.dart';
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 import 'MatchableQuestion.dart';
 import 'TestResultPage.dart';
 
@@ -104,7 +105,7 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
           index++;
 
           print(score);
-          switch (quizModel.data!.quiz!.questionsList![0].type) {
+          switch (quizModel.data!.quiz!.questionsList![index].type) {
             case "one_select":
               {
                 Navigator.pushReplacement(
@@ -124,7 +125,7 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
               {
                 calculate_prs();
                 check_correct = false;
-              }
+              }//
             case "writable":
               {
                 Navigator.pushReplacement(
@@ -181,6 +182,8 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
   }
 
   Future<void> end(EndTestModel model) async {
+    LoadingDialog.show_dialog(context);
+
     _endLesson();
     _endTest(model);
   }
@@ -201,6 +204,8 @@ class _MultiSelectPageState extends State<MultiSelectPage> {
       score: model.score,
       percent: model.percent,
     ));
+    LoadingDialog.hide_dialog(context);
+
     if (data.status == "success") {
       Navigator.pushReplacement(
           context,

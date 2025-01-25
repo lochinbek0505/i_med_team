@@ -13,17 +13,18 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        tools:ignore="WrongManifestParent" />
+         />
     <uses-permission android:name="android.permission.INTERNET"/> <!-- Add this -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="WrongManifestParent" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:name="${applicationName}"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
-        android:label="i_med_team">
+        android:label="iMedTeam"
+        tools:targetApi="honeycomb">
 
         <activity
             android:name=".MainActivity"

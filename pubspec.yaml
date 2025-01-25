@@ -39,7 +39,7 @@ dependencies:
   shared_preferences: ^2.3.4
   youtube_player_flutter: ^9.1.1
   path_provider: ^2.1.5
-  flutter_pdfview: ^1.3.4
+  flutter_pdfview: ^1.4.0
   dio: ^5.7.0
   lottie: ^3.3.1
   fluttertoast: ^8.2.10
@@ -48,6 +48,9 @@ dependencies:
   intl: ^0.20.1
   provider: ^6.1.2
   url_launcher: ^6.3.1
+  curved_labeled_navigation_bar: ^2.0.5
+  fancy_password_field: ^2.0.8
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +78,8 @@ flutter:
   assets:
      - assets/
      - assets/anim/test.json
+     - assets/anim/verify.json
+     - assets/anim/loading.json
     #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -88,12 +93,12 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Narito
+      fonts:
+        - asset: assets/fonts/Narito.ttf
   #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  #           weight: 900
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

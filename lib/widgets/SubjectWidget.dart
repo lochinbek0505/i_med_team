@@ -8,22 +8,50 @@ class Subjectwidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      // Add spacing between buttons
-      child: Card(
-        elevation: 5,
-        color: Colors.white,
-        child: Container(
-          height: 40,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(data.name),
-            ),
-          ),
+    return Container(
+        height: 90,
+        decoration: BoxDecoration(
+
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+
         ),
-      ),
-    );
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              child: CircleAvatar(
+                backgroundColor: Colors.grey,
+                radius: 30,
+                backgroundImage:
+                    NetworkImage("https://oztech.uz${data.image!}"),
+              ),
+            ),
+            SizedBox(
+              width: 15,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.name!,
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5,),
+                Text(
+                  "${data.courses!} ta kurs",
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                )
+              ],
+            )
+          ],
+        ));
   }
 }

@@ -8,7 +8,7 @@ class LoginRequest {
   }
 
   LoginRequest.fromJson(dynamic json) {
-    _phone = json['phone'];
+    _phone = json['email'];
     _password = json['password'];
   }
 
@@ -30,7 +30,7 @@ class LoginRequest {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['phone'] = _phone;
+    map['email'] = _phone;
     map['password'] = _password;
     return map;
   }

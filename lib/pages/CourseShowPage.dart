@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/contact_model.dart';
 import '../services/ApiService.dart';
+import '../widgets/dialog.dart';
 import 'MatchableQuestion.dart';
 import 'WritableQuestion.dart';
 
@@ -43,24 +44,6 @@ class _CourseShowPageState extends State<CourseShowPage> {
     _itemsFuture = apiService.course_detailes(widget.id!);
     _refreshItems();
   }
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    String message = "Welcome to the First Page!";
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Sahifaga qaytganingizda ishlaydi
-      final args = ModalRoute.of(context)?.settings.arguments as String?;
-      if (args != null) {
-        setState(() {
-          message = args;
-          _refreshItems();
-
-          // Natija asosida sahifani yangilash
-        });
-      }
-    });
-  }
 
   Future<void> _refreshItems() async {
     setState(() {
@@ -79,7 +62,10 @@ class _CourseShowPageState extends State<CourseShowPage> {
     switch (data.data!.quiz!.questionsList![0].type) {
       case "one_select":
         {
-         await Navigator.push(
+          // If the result is 'refresh', update the message
+          LoadingDialog.hide_dialog(context);
+
+          var result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => QuestionPage(
@@ -90,13 +76,19 @@ class _CourseShowPageState extends State<CourseShowPage> {
                   lesson_id: lesson_id,
                   data: data,
                 ),
-                settings: const RouteSettings(arguments: "New message from Second Page!"),
 
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
       case "many_select":
         {
-         await Navigator.push(
+          LoadingDialog.hide_dialog(context);
+
+          var result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MultiSelectPage(
@@ -108,10 +100,17 @@ class _CourseShowPageState extends State<CourseShowPage> {
                   data: data,
                 ),
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
       case "writable":
         {
-          Navigator.push(
+          LoadingDialog.hide_dialog(context);
+
+          var result = Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => WritableQuestion(
@@ -123,11 +122,18 @@ class _CourseShowPageState extends State<CourseShowPage> {
                   data: data,
                 ),
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
 
       case "matchable":
         {
-          Navigator.push(
+          LoadingDialog.hide_dialog(context);
+
+          var result = Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MatchableQuestion(
@@ -139,6 +145,11 @@ class _CourseShowPageState extends State<CourseShowPage> {
                   data: data,
                 ),
               ));
+          if (result == 'refresh') {
+            setState(() {
+              _refreshItems();
+            });
+          }
         }
     }
   }
@@ -237,10 +248,16 @@ class _CourseShowPageState extends State<CourseShowPage> {
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                             ),
-                            child: Image.network(
-                              data.user.image ?? "",
+                            child: data.user.image != null
+                                ? Image.network(
+                                    data.user.image ?? "",
                               fit: BoxFit.cover,
-                            ),
+                                  )
+                                : Image.asset(
+                                    "assets/teacher.png",
+                                    height: 60,
+                                    width: 60,
+                                  ),
                           ),
                           SizedBox(
                             width: 20,
@@ -273,7 +290,7 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                 width: 7,
                               ),
                               Text(
-                                "${data.countStudents}",
+                                "${data.countStudents} ta o'quvchi",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -394,22 +411,30 @@ class _CourseShowPageState extends State<CourseShowPage> {
                                               if (data.isOpen &&
                                                   item.isOpen &&
                                                   section.isOpen) {
-                                                if (item.type == "lesson") {
+                                                LoadingDialog.show_dialog(context);
 
-                                                 await Navigator.push(
+                                                if (item.type == "lesson") {
+                                                  LoadingDialog.hide_dialog(context);
+
+                                                  var result =
+                                                      await Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             LessonsPage(
-                                                                course_id:
+                                                                courseId:
                                                                     widget.id!,
-                                                                modul_id:
+                                                                moduleId:
                                                                     section.id,
-                                                                lesson_id:
+                                                                lessonId:
                                                                     item.id),
-                                                        settings: const RouteSettings(arguments: "New message from Second Page!"),
                                                  ),
                                                   );
+                                                  if (result == 'refresh') {
+                                                    setState(() {
+                                                      _refreshItems();
+                                                    });
+                                                  }
                                                 } else if (item.type ==
                                                     "quiz") {
                                                   quiz_navigation(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:i_med_team/models/contact_model.dart';
 import 'package:i_med_team/models/courses_list_model.dart';
@@ -18,7 +19,11 @@ import 'package:i_med_team/models/register_request.dart';
 import 'package:i_med_team/models/register_response.dart';
 import 'package:i_med_team/models/show_courses_model.dart';
 import 'package:i_med_team/models/subject_model.dart';
+import 'package:i_med_team/models/verfy_model.dart';
+import 'package:i_med_team/pages/RegisterPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../pages/OnboardingPage.dart';
 
 class ApiService {
   final String baseUrl;
@@ -29,6 +34,7 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
+
 
   // Register API
   Future<RegisterResponse> register_request(RegisterRequest user) async {
@@ -50,8 +56,83 @@ class ApiService {
         return RegisterResponse.fromJson(data);
       }
     } else {
-      print(response);
+      print(response.body);
+      print(jsonDecode(response.body));
+
       throw Exception('Failed to register');
+    }
+  }
+  // https://oztech.uz/api/v1/users/generate/
+  Future<RegisterResponse> resend_code(String email) async {
+    final url =
+    Uri.parse('$baseUrl/users/generate/'); // Adjust the endpoint as needed
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email":email}),
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+      print(data);
+      if (data['success'] == true) {
+        return RegisterResponse.fromJson(data);
+      } else {
+        return RegisterResponse.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to login');
+    }
+  }
+
+  Future<RegisterResponse> verfy_code(VerfyModel user) async {
+    final url =
+    Uri.parse('$baseUrl/users/verify/'); // Adjust the endpoint as needed
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(user.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+      print(data);
+      if (data['success'] == true) {
+        return RegisterResponse.fromJson(data);
+      } else {
+        return RegisterResponse.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to login');
+    }
+  }
+
+  Future<RegisterResponse> reset_password(email,password) async {
+    final url =
+    Uri.parse('$baseUrl/users/change/password/'); // Adjust the endpoint as needed
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email":email,
+      "password":password}),
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+      final data = jsonDecode(response.body);
+      print(data);
+      if (data['success'] == true) {
+        return RegisterResponse.fromJson(data);
+      } else {
+        return RegisterResponse.fromJson(data);
+      }
+    } else {
+      print(response);
+      throw Exception('Failed to login');
     }
   }
 
@@ -75,7 +156,7 @@ class ApiService {
         return LoginResponse.fromJson(data);
       }
     } else {
-      print(response);
+      print(response.body);
       throw Exception('Failed to login');
     }
   }
@@ -104,7 +185,7 @@ class ApiService {
     }
   }
 // Subjects API main page
-  Future<SubjectModel> subject_list() async {
+  Future<SubjectModel> subject_list(context) async {
     var token = await getToken();
 
     final url = Uri.parse(
@@ -122,7 +203,14 @@ class ApiService {
       } else {
         return SubjectModel.fromJson(data);
       }
-    } else {
+    }
+    else if(response.statusCode==401){
+      clearSharedPreferences();
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => OnboardingScreen()));
+      throw Exception("Unauthorized");
+    }
+    else {
       print(response);
       throw Exception('Failed to get courses');
     }
@@ -154,6 +242,10 @@ class ApiService {
   }
 
 
+  Future<void> clearSharedPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
   //Show one course detailes API show course page
   Future<ShowCoursesModel> course_detailes(num id) async {
     var token = await getToken();

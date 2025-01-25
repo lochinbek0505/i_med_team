@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/login_request.dart';
 import 'package:i_med_team/models/profile_model.dart';
+import 'package:i_med_team/pages/CodeVerifyPage.dart';
 import 'package:i_med_team/pages/HomePage.dart';
+import 'package:i_med_team/pages/ProfessionPage.dart';
+import 'package:i_med_team/pages/ResetPassword.dart';
+import 'package:i_med_team/widgets/dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/ApiService.dart';
-import 'RegisterPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,6 +23,12 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
 
   final ApiService apiService = ApiService('https://oztech.uz/api/v1');
+  double _passwordStrength = 0.0;
+
+  Future<void> saveEmail(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', token);
+  }
 
   // Replace with your API URL
   bool isLoading = false;
@@ -27,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   void handLogin() async {
     // var user=RegisterRequest(phone: , firstName: firstNameController.text, lastName: lastController.text, middleName: middleController.text, city: selectedRegion.toString(), town: selectedDistrict.toString(), password: passwordController.text);
     // var response=await apiService.register_request(user);
-
+    LoadingDialog.show_dialog(context);
     final phone = phoneController.text.trim();
     final password = passwordController.text.trim();
 
@@ -45,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final user = LoginRequest(phone: phone, password: password);
       final success = await apiService.login_request(user);
-
+      await saveEmail(phone);
       if (success.status == 'success') {
         print("TOKEN TOKEN TOKEN TOKEN TOKEN TOKEN ${success.data.token}");
         saveToken(success.data.token);
@@ -54,17 +63,27 @@ class _LoginPageState extends State<LoginPage> {
         );
         var profile_data = await apiService.profile();
         await saveUserToPreferences(profile_data);
+        LoadingDialog.hide_dialog(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Homepage()),
         ); // Navigator.pop(context);
         // Navigate to another page (e.g., HomePage)
+      } else if (success.status == 'error' && success.code == "402") {
+        LoadingDialog.hide_dialog(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Iltimos tasdiqlash kodini kiriting !")));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (builder) => CodeVerificationPage()));
       } else {
+        LoadingDialog.hide_dialog(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$success')),
         );
       }
     } catch (e) {
+      LoadingDialog.hide_dialog(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed: $e')),
       );
@@ -80,19 +99,70 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString('auth_token', token);
   }
 
+  void _checkPasswordStrength() {
+    final password = passwordController.text;
+
+    if (password.isEmpty) {
+      setState(() {
+        _passwordStrength = 0.0;
+      });
+      return;
+    }
+
+    double strength = 0.0;
+
+    // Password length
+    if (password.length >= 6) strength += 0.25;
+
+    // Contains uppercase letter
+    if (RegExp(r'[A-Z]').hasMatch(password)) strength += 0.25;
+
+    // Contains number
+    if (RegExp(r'[0-9]').hasMatch(password)) strength += 0.25;
+
+    // Contains special character
+    if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) strength += 0.25;
+
+    setState(() {
+      _passwordStrength = strength;
+    });
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
     super.initState();
-    phoneController.addListener(() {
-      if (!phoneController.text.startsWith("+998")) {
-        // Force the prefix "+998"
-        phoneController.text = "+998";
-        phoneController.selection = TextSelection.fromPosition(
-          TextPosition(offset: phoneController.text.length),
+    passwordController.addListener(_checkPasswordStrength);
+  }
+
+  Widget _buildStrengthIndicator() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate(4, (index) {
+        return Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            height: 10,
+            decoration: BoxDecoration(
+              color: index < _passwordStrength
+                  ? (index < 2
+                      ? Colors.red
+                      : index == 2
+                          ? Colors.orange
+                          : Colors.green)
+                  : Colors.grey[300],
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
         );
-      }
-    });
+      }),
+    );
   }
 
   @override
@@ -113,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              height: 360,
+              height: 550,
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Card(
                 color: Colors.white,
@@ -122,11 +192,30 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Image.asset(
+                        "assets/onboard1.png",
+                        height: 100,
+                        width: 100,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "IMedTeam",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
                       TextField(
                         controller: phoneController,
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          labelText: 'Telefon raqamingiz',
+                          labelText: 'Emailingiz',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -139,6 +228,31 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         obscureText: true,
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (builder) => ResetPasswordPage(
+                                      check: true, title: "Parolni tiklash")));
+                        },
+                        child: Container(
+                          alignment: Alignment.bottomRight,
+                          child: Text(
+                            textAlign: TextAlign.end,
+                            "Parolni unitdingizmi ?",
+                            style: TextStyle(
+                              color: Colors.lightBlue,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // SizedBox(height: 6),
+                      // _buildStrengthIndicator(),
                       SizedBox(height: 30),
                       isLoading
                           ? CircularProgressIndicator()
@@ -160,10 +274,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RegisterPage()),
+                                builder: (context) => ProfessionPage()),
                           );
                         },
                         child: Text(
