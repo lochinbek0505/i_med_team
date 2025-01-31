@@ -1,14 +1,9 @@
 class User {
   String? firstName;
   String? lastName;
-  dynamic image;
+  String? image;
 
   User({this.firstName, this.lastName, this.image});
-
-  User copyWith({String? firstName, String? lastName, dynamic image}) => User(
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
-      image: image ?? this.image);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -18,7 +13,7 @@ class User {
     return map;
   }
 
-  User.fromJson(dynamic json) {
+  User.fromJson(dynamic json){
     firstName = json["first_name"];
     lastName = json["last_name"];
     image = json["image"];
@@ -28,22 +23,25 @@ class User {
 class Subject {
   num? id;
   String? name;
+  String? image;
+  num? courses;
 
-  Subject({this.id, this.name});
-
-  Subject copyWith({num? id, String? name}) =>
-      Subject(id: id ?? this.id, name: name ?? this.name);
+  Subject({this.id, this.name, this.image, this.courses});
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map["id"] = id;
     map["name"] = name;
+    map["image"] = image;
+    map["courses"] = courses;
     return map;
   }
 
-  Subject.fromJson(dynamic json) {
+  Subject.fromJson(dynamic json){
     id = json["id"];
     name = json["name"];
+    image = json["image"];
+    courses = json["courses"];
   }
 }
 
@@ -61,54 +59,11 @@ class Data {
   num? countLessons;
   num? countStudents;
   bool? isOpen;
+  String? rest;
   String? created;
 
   Data(
-      {this.id,
-      this.name,
-      this.user,
-      this.subject,
-      this.description,
-      this.image,
-      this.price,
-      this.percentage,
-      this.length,
-      this.countModules,
-      this.countLessons,
-      this.countStudents,
-      this.isOpen,
-      this.created});
-
-  Data copyWith(
-          {num? id,
-          String? name,
-          User? user,
-          Subject? subject,
-          String? description,
-          String? image,
-          num? price,
-          num? percentage,
-          num? length,
-          num? countModules,
-          num? countLessons,
-          num? countStudents,
-          bool? isOpen,
-          String? created}) =>
-      Data(
-          id: id ?? this.id,
-          name: name ?? this.name,
-          user: user ?? this.user,
-          subject: subject ?? this.subject,
-          description: description ?? this.description,
-          image: image ?? this.image,
-          price: price ?? this.price,
-          percentage: percentage ?? this.percentage,
-          length: length ?? this.length,
-          countModules: countModules ?? this.countModules,
-          countLessons: countLessons ?? this.countLessons,
-          countStudents: countStudents ?? this.countStudents,
-          isOpen: isOpen ?? this.isOpen,
-          created: created ?? this.created);
+      {this.id, this.name, this.user, this.subject, this.description, this.image, this.price, this.percentage, this.length, this.countModules, this.countLessons, this.countStudents, this.isOpen, this.rest, this.created});
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -129,16 +84,17 @@ class Data {
     map["count_lessons"] = countLessons;
     map["count_students"] = countStudents;
     map["is_open"] = isOpen;
+    map["rest"] = rest;
     map["created"] = created;
     return map;
   }
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(dynamic json){
     id = json["id"];
     name = json["name"];
     user = json["user"] != null ? User.fromJson(json["user"]) : null;
     subject =
-        json["subject"] != null ? Subject.fromJson(json["subject"]) : null;
+    json["subject"] != null ? Subject.fromJson(json["subject"]) : null;
     description = json["description"];
     image = json["image"];
     price = json["price"];
@@ -148,6 +104,7 @@ class Data {
     countLessons = json["count_lessons"];
     countStudents = json["count_students"];
     isOpen = json["is_open"];
+    rest = json["rest"];
     created = json["created"];
   }
 }
@@ -159,13 +116,6 @@ class MyCoursesModel {
 
   MyCoursesModel({this.status, this.code, this.dataList});
 
-  MyCoursesModel copyWith(
-          {String? status, String? code, List<Data>? dataList}) =>
-      MyCoursesModel(
-          status: status ?? this.status,
-          code: code ?? this.code,
-          dataList: dataList ?? this.dataList);
-
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map["status"] = status;
@@ -176,7 +126,7 @@ class MyCoursesModel {
     return map;
   }
 
-  MyCoursesModel.fromJson(dynamic json) {
+  MyCoursesModel.fromJson(dynamic json){
     status = json["status"];
     code = json["code"];
     if (json["data"] != null) {

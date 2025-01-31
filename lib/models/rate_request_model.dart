@@ -10,7 +10,6 @@ class RateRequestModel {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map["course"] = course;
-    map["type"] = type;
     return map;
   }
 

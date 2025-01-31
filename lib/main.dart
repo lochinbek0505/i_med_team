@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:i_med_team/pages/AboutUsPage.dart';
 import 'package:i_med_team/pages/CodeVerifyPage.dart';
 import 'package:i_med_team/pages/HomePage.dart';
 import 'package:i_med_team/pages/LoginPage.dart';

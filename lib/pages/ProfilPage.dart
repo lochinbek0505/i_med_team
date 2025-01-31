@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:i_med_team/pages/OnboardingPage.dart';
-import 'package:i_med_team/pages/RewardsPage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -350,14 +350,14 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
-    apiService.profile().then((value) {
-      saveUserToPreferences(value);
-    });
-    getUserFromPreferences().then((value) {
-      setState(() {
-        profil = value!;
-      });
-    });
+    // apiService.profile().then((value) {
+    //   saveUserToPreferences(value);
+    // });
+    // getUserFromPreferences().then((value) {
+    //   setState(() {
+    //     profil = value!;
+    //   });
+    // });
   }
 
   // File? _image;
@@ -421,6 +421,107 @@ class _ProfilePageState extends State<ProfilePage> {
         SnackBar(content: Text("Hech qanday rasm tanlanmadi.")),
       );
     }
+  }
+
+  // profil == null
+  // ? CircularProgressIndicator()
+  //     : Column(
+  //     children: [
+  //     const SizedBox(height: 20),
+  // // Profile Section
+  //       Column(
+  //       children: [
+  //         Stack(
+  //           children: [
+  //             CircleAvatar(
+  //               radius: 45,
+  //               backgroundColor: Colors.white,
+  //               backgroundImage: profil!.data!.image != null
+  //                   ? NetworkImage(
+  //                 profil!.data!.image.toString(),
+  //               )
+  //                   : AssetImage("assets/teacher.png"), // Placeholder
+  //             ),
+  //             Positioned(
+  //               bottom: 0,
+  //               right: 0,
+  //               child: GestureDetector(
+  //                 onTap: edit_profil,
+  //                 child: Container(
+  //                   decoration: BoxDecoration(
+  //                     color: Colors.white,
+  //                     shape: BoxShape.circle,
+  //                     boxShadow: [
+  //                       BoxShadow(
+  //                         color: Colors.black12,
+  //                         blurRadius: 5,
+  //                         spreadRadius: 1,
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   child: const Icon(
+  //                     Icons.edit,
+  //                     color: Colors.black87,
+  //                     size: 25,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 15),
+  //         Text(
+  //           '${profil!.data!.firstName} ${profil!.data!.lastName}',
+  //           style: TextStyle(
+  //             fontSize: 19,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //       ],
+  //       ),
+  //
+  // const SizedBox(height: 20),
+  // // Profile Options
+  // GestureDetector(
+  // onTap: () {
+  // Navigator.push(
+  // context,
+  // MaterialPageRoute(
+  // builder: (builder) => Rewardspage()));
+  // },
+  //
+  // child: _buildProfileOption(
+  // link: "assets/business.png",
+  // title: "Natijalar",
+  // onTap: () {},
+  // ),
+  // ),
+  //
+  // _buildProfileOption(
+  // link: "assets/clock.png",
+  // title: profil!.data!.duration != null
+  // ? "${profil!.data!.duration! ~/ 60} soat ${profil!.data!.duration! % 60} minut"
+  //     : "Faollik mavjud emas",
+  // onTap: () {},
+  // showArrow: false,
+  // ),
+
+  int calculateDateInterval(String targetDate) {
+    // Hozirgi sanani olish
+    final currentDate = DateTime.now();
+
+    // Berilgan sanani parse qilish
+    final parsedTargetDate = DateFormat('yyyy-MM-dd').parse(targetDate);
+
+    // Kunlar orasidagi farqni hisoblash
+    final difference = parsedTargetDate.difference(currentDate);
+
+    return difference.inDays;
+  }
+
+  void main() {
+    String targetDate = "2025-07-28";
+    print(calculateDateInterval(targetDate)); // Natija: Kunlar soni
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -635,248 +736,167 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.grey[50],
-      // appBar: AppBar(
-      //   // backgroundColor: Colors.redAccent,
-      //   title: const Center(
-      //     child: Text(
-      //       'Profil',
-      //       style: TextStyle(
-      //         color: Colors.white,
-      //         fontWeight: FontWeight.bold,
-      //       ),
-      //     ),
-      //   ),
-      //   elevation: 0,
-      // ),
-      body: profil == null
-          ? CircularProgressIndicator()
-          : Column(
-              children: [
-                const SizedBox(height: 20),
-                // Profile Section
-                Column(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundColor: Colors.white,
-                          backgroundImage: profil!.data!.image != null
-                              ? NetworkImage(
-                                  profil!.data!.image.toString(),
-                                )
-                              : AssetImage("assets/teacher.png"), // Placeholder
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: edit_profil,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.black87,
-                                size: 25,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      '${profil!.data!.firstName} ${profil!.data!.lastName}',
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-          // Profile Options
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (builder) => Rewardspage()));
-            },
-
-            child: _buildProfileOption(
-              link: "assets/business.png",
-              title: "Natijalar",
-              onTap: () {},
-            ),
+      appBar: AppBar(
+        // backgroundColor: Colors.redAccent,
+        title: const Center(
+          child: Text(
+            'Mening kurslarim',
+            // style: TextStyle(
+            //   color: Colors.white,
+            //   fontWeight: FontWeight.bold,
+            // ),
           ),
+        ),
+        elevation: 0,
+      ),
+      body: FutureBuilder(
+          future: apiService.my_courses_list(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.dataList!.isEmpty) {
+              return const Center(child: Text('No items found.'));
+            } else {
+              var courses = snapshot.data!.dataList;
 
-                _buildProfileOption(
-                  link: "assets/clock.png",
-                  title: profil!.data!.duration != null
-                      ? "${profil!.data!.duration! ~/ 60} soat ${profil!.data!.duration! % 60} minut"
-                      : "Faollik mavjud emas",
-                  onTap: () {},
-                  showArrow: false,
-                ),
-
-                Expanded(
-                  child: FutureBuilder(
-                      future: apiService.my_courses_list(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.dataList!.isEmpty) {
-                          return const Center(child: Text('No items found.'));
-                        } else {
-                          var courses = snapshot.data!.dataList;
-
-                          return ListView.builder(
-                              itemCount: courses!.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 15),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => ShowMyLessons(
-                                                id: courses[index].id)),
-                                      );
-                                    },
-                                    child: Container(
-                                      width: 340,
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        // Light beige color
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white,
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // Left Column (Text and Progress Bar)
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                // Title
-                                                Text(
-                                                  courses![index].name!,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black87,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-
-                                                // Subtitle
-                                                Text(
-                                                  "${courses[index].user!.firstName} ${courses[index].user!.lastName}",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.black54,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-
-                                                // Progress Bar and Percentage
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16),
-                                                        child:
-                                                            LinearProgressIndicator(
-                                                          value: courses[index]
-                                                                  .percentage!
-                                                                  .toDouble() /
-                                                              100,
-                                                          // 0% progress
-                                                          backgroundColor:
-                                                              Colors.grey[300],
-                                                          color: Colors.green,
-                                                          minHeight: 6,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    Text(
-                                                      "${courses[index].percentage!.toInt()}%",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.green,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          // Circular Avatar
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            // Circular shape
-                                            child: courses[index].user!.image ==
-                                                    null
-                                                ? Image.asset(
-                                                    "assets/teacher.png",
-                                                    height: 60,
-                                                    width: 60,
-                                                  )
-                                                : Image.network(
-                                                    courses[index].user!.image,
-                                                    // Replace with the actual image URL
-                                                    width: 60,
-                                                    height: 60,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                          ),
-                                        ],
+              return ListView.builder(
+                  itemCount: courses!.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 15),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ShowMyLessons(id: courses[index].id)),
+                          );
+                        },
+                        child: Container(
+                          width: 360,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            // Light beige color
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Left Column (Text and Progress Bar)
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Title
+                                    Text(
+                                      courses![index].name!,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
                                       ),
                                     ),
-                                  ),
-                                );
-                              });
-                        }
-                      }),
-                ),
-              ],
-            ),
+                                    const SizedBox(height: 4),
 
-      // Bottom Navigation Bar
+                                    // Subtitle
+                                    Text(
+                                      "${courses[index].user!.firstName} ${courses[index].user!.lastName}",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+
+                                    // Progress Bar and Percentage
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                child: LinearProgressIndicator(
+                                                  value: courses[index]
+                                                          .percentage!
+                                                          .toDouble() /
+                                                      100,
+                                                  // 0% progress
+                                                  backgroundColor:
+                                                      Colors.grey[300],
+                                                  color: Colors.green,
+                                                  minHeight: 6,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "${courses[index].percentage!.toInt()}%",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "${calculateDateInterval(courses[index].rest!)} kun qoldi",
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              SizedBox(
+                                width: 10,
+                              ),
+                              // Circular Avatar
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                // Circular shape
+                                child: courses[index].user!.image == null
+                                    ? Image.asset(
+                                        "assets/teacher.png",
+                                        height: 60,
+                                        width: 60,
+                                      )
+                                    : Image.network(
+                                        courses[index].user!.image!,
+                                        // Replace with the actual image URL
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+            }
+          }),
     );
+
+    // Bottom Navigation Bar
   }
 
   // Profile Option Widget

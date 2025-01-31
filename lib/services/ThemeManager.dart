@@ -9,7 +9,7 @@ class ThemeManager {
     // Asosiy fon rangi
 
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.red, // AppBar fon rangi
+      backgroundColor: Color(0xffC31A18), // AppBar fon rangi
       foregroundColor: Colors.white, // Matn rangi
       elevation: 4, // AppBar soyasi
     ),

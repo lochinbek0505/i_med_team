@@ -92,18 +92,13 @@ class _ReytingPageState extends State<ReytingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   title: Text(
-      //     'Peshqadamlar',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: 20,
-      //       fontWeight: FontWeight.bold,
-      //     ),
-      //   ),
-      //   // backgroundColor: Colors.redAccent,
-      //   centerTitle: true,
-      // ),
+      appBar: AppBar(
+        title: Text(
+          'Peshqadamlar',
+        ),
+        // backgroundColor: Colors.redAccent,
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -135,188 +130,202 @@ class _ReytingPageState extends State<ReytingPage> {
             ),
             SizedBox(height: 20),
             // Example List (Rating)
-            ratings_list.isEmpty
-                ? CircularProgressIndicator()
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: ratings_list.length, // Example list length
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Card(
-                            elevation: 4,
-                            shadowColor: Colors.redAccent,
-                            child: index == 0
-                                ? Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[50],
-                                        borderRadius: BorderRadius.circular(14),
-                                        border: Border.all(
-                                          color: Colors.yellowAccent,
-                                          width: 1,
-                                        )),
-                                    child: ListTile(
-                                      leading: Image.asset(
-                                        "assets/gold.png",
-                                        width: 40,
-                                        height: 40,
-                                      ),
-                                      title: Text(
-                                        "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
+            FutureBuilder(
+                future: apiService.course_list(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData ||
+                      snapshot.data!.data!.isEmpty) {
+                    return const Center(child: Text('No items found.'));
+                  } else {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: ratings_list.length, // Example list length
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Card(
+                              elevation: 4,
+                              shadowColor: Colors.redAccent,
+                              child: index == 0
+                                  ? Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey[50],
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          border: Border.all(
+                                            color: Colors.yellowAccent,
+                                            width: 1,
+                                          )),
+                                      child: ListTile(
+                                        leading: Image.asset(
+                                          "assets/gold.png",
+                                          width: 40,
+                                          height: 40,
                                         ),
-                                      ),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Image.asset(
-                                            "assets/star2.png",
-                                            width: 35,
-                                            height: 35,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            '${ratings_list[index].score! ~/ 5}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : index == 1
-                                    ? Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey[50],
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                            border: Border.all(
-                                              color: Colors.lightBlueAccent,
-                                              width: 1,
-                                            )),
-                                        child: ListTile(
-                                          leading: Image.asset(
-                                            "assets/silver.png",
-                                            width: 40,
-                                            height: 40,
-                                          ),
-                                          title: Text(
-                                            "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          trailing: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Image.asset(
-                                                "assets/star2.png",
-                                                width: 35,
-                                                height: 35,
-                                              ),
-                                              SizedBox(width: 5),
-                                              Text(
-                                                '${ratings_list[index].score! ~/ 5}',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                            ],
+                                        title: Text(
+                                          "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
                                           ),
                                         ),
-                                      )
-                                    : index == 2
-                                        ? Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey[50],
-                                                borderRadius:
-                                                    BorderRadius.circular(14),
-                                                border: Border.all(
-                                                  color: Colors.redAccent,
-                                                  width: 1,
-                                                )),
-                                            child: ListTile(
-                                              leading: Image.asset(
-                                                "assets/bronze.png",
-                                                width: 40,
-                                                height: 40,
-                                              ),
-                                              title: Text(
-                                                "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Image.asset(
-                                                    "assets/star2.png",
-                                                    width: 35,
-                                                    height: 35,
-                                                  ),
-                                                  SizedBox(width: 5),
-                                                  Text(
-                                                    '${ratings_list[index].score! ~/ 5}',
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                    ),
-                                                  ),
-                                                ],
+                                        trailing: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Image.asset(
+                                              "assets/star2.png",
+                                              width: 35,
+                                              height: 35,
+                                            ),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              '${ratings_list[index].score! ~/ 5}',
+                                              style: TextStyle(
+                                                fontSize: 18,
                                               ),
                                             ),
-                                          )
-                                        : Container(
-                                            decoration: BoxDecoration(
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : index == 1
+                                      ? Container(
+                                          decoration: BoxDecoration(
                                               color: Colors.grey[50],
                                               borderRadius:
                                                   BorderRadius.circular(14),
+                                              border: Border.all(
+                                                color: Colors.lightBlueAccent,
+                                                width: 1,
+                                              )),
+                                          child: ListTile(
+                                            leading: Image.asset(
+                                              "assets/silver.png",
+                                              width: 40,
+                                              height: 40,
                                             ),
-                                            child: ListTile(
-                                              leading: Text(
-                                                '${index + 1}',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 22,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                            title: Text(
+                                              "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
                                               ),
-                                              title: Text(
-                                                "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16,
+                                            ),
+                                            trailing: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Image.asset(
+                                                  "assets/star2.png",
+                                                  width: 35,
+                                                  height: 35,
                                                 ),
-                                              ),
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Image.asset(
-                                                    "assets/star2.png",
-                                                    width: 35,
-                                                    height: 35,
+                                                SizedBox(width: 5),
+                                                Text(
+                                                  '${ratings_list[index].score! ~/ 5}',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
                                                   ),
-                                                  SizedBox(width: 5),
-                                                  Text(
-                                                    '${ratings_list[index].score! ~/ 5}',
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                                        )
+                                      : index == 2
+                                          ? Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[50],
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  border: Border.all(
+                                                    color: Colors.redAccent,
+                                                    width: 1,
+                                                  )),
+                                              child: ListTile(
+                                                leading: Image.asset(
+                                                  "assets/bronze.png",
+                                                  width: 40,
+                                                  height: 40,
+                                                ),
+                                                title: Text(
+                                                  "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                trailing: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Image.asset(
+                                                      "assets/star2.png",
+                                                      width: 35,
+                                                      height: 35,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      '${ratings_list[index].score! ~/ 5}',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[50],
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                              child: ListTile(
+                                                leading: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 22,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                title: Text(
+                                                  "${ratings_list[index].user!.firstName} ${ratings_list[index].user!.lastName}",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                trailing: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Image.asset(
+                                                      "assets/star2.png",
+                                                      width: 35,
+                                                      height: 35,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      '${ratings_list[index].score! ~/ 5}',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                }),
           ],
         ),
       ),

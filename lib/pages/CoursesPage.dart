@@ -164,7 +164,7 @@ class _CoursespageState extends State<Coursespage> {
                                           width: 60,
                                         )
                                       : Image.network(
-                                          courses[index].user!.image,
+                                          courses[index].user!.image!,
                                           // Replace with the actual image URL
                                           width: 60,
                                           height: 60,

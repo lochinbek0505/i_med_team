@@ -189,8 +189,9 @@ class _SubjectsCoursePageState extends State<SubjectsCoursePage> {
                         color: Colors.black87,
                         fontSize: 17,
                       ),
-                      prefixIcon: Image.asset(
-                        'assets/ic_loupe.png',
+                      prefixIcon:  Icon(
+                        Icons.search_outlined,
+                        size: 30,
                       ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(vertical: 14),

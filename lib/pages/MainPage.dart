@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:i_med_team/models/subject_model.dart';
+import 'package:i_med_team/pages/SettingsPage.dart';
 import 'package:i_med_team/widgets/SubjectWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/contact_model.dart';
 import '../models/profile_model.dart';
 import '../services/ApiService.dart';
-import '../widgets/dialog.dart';
 import 'SubjectCoursesPage.dart';
 
 class Mainpage extends StatefulWidget {
@@ -140,51 +140,121 @@ class _MainpageState extends State<Mainpage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(180),
+          child: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/ic_app_background.jpg"),
+                    fit: BoxFit.cover)),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 25,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 20),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (builder) => SettingsPage()));
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          //
+                          child: profil != null
+                              ? profil!.data!.image != null
+                                  ? Image.network(
+                                      profil!.data!.image.toString(),
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                        );
+                                      },
+                                      errorBuilder: (BuildContext context,
+                                          Object exception,
+                                          StackTrace? stackTrace) {
+                                        return Image.asset(
+                                            'assets/teacher.png'); // Default rasm
+                                      },
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset("assets/teacher.png")
+                              : Image.asset("assets/teacher.png"),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                profil != null
+                    ? Text(
+                        "Salom , ${decodeText(profil!.data!.firstName.toString())} ",
+                        style: Theme.of(context).textTheme.titleLarge)
+                    : Text("Salom ,  ",
+                        style: Theme.of(context).textTheme.titleLarge),
+                SizedBox(
+                  height: 5,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Center(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          _filterCourses(value);
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Fan qidirish',
+                          hintStyle: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 17,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search_outlined,
+                            size: 30,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )),
       body: RefreshIndicator(
         onRefresh: _refreshItems,
         child: Column(
           children: [
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: GestureDetector(
-
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Center(
-                    child: TextField(
-                      controller: searchController,
-                      onChanged: (value) {
-
-                        _filterCourses(value);
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Fan qidirish',
-                        hintStyle: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 17,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search_outlined,
-                          size: 30,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 14),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
             filteredItems.isEmpty
-                ? CircularProgressIndicator()
-                : Container(
-                    height: 200,
+                ? Center(child: CircularProgressIndicator())
+                : Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 5.0, horizontal: 15),

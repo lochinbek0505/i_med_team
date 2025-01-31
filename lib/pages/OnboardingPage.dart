@@ -15,21 +15,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingItem> _onboardingItems = [
     OnboardingItem(
       image: 'assets/onboard1.png',
-      title: 'Ilovamizga xush kelibsiz',
-      description:
-          " \"iMed Team\" tibbiy platformasi 2021-yildan buyon o‘z faoliyatlarini olib bormoqda. ",
-    ),
-    OnboardingItem(
-      image: 'assets/onboard22.png',
-      title: "Sohani mutaxasislar tomonidan o'rganing",
-      description:
-          "Shu kungacha biz 2000 dan ziyod bo’lgan talaba va shifokorlarni o’qitib keldik !",
+      title: '"iMed Team" ga xush kelibsiz!',
+      description: " \"iMed Team\" - Tibbiyotni davolovchi maskan! ",
     ),
     OnboardingItem(
       image: 'assets/onboard3.png',
-      title: "O'z yo'lingizni biz bilan boshlang!",
+      title: "Biz bilan tibbiyotni tez va oson o’rganing!",
       description:
-          "Maqsadimiz talaba va shifokorlarni zamonaviy va isbotli tibbiyot bilan to’laqonli tanishtirish",
+          "Maqsadimiz : talaba va shifokorlarni zamonaviy va isbotli tibbiyot bilan to’laqonli tanishtirish",
+    ),
+    OnboardingItem(
+      image: 'assets/onboard22.png',
+      title: "Har bir yo’nalishni o’z mutaxassislari tomonidan o’rganing!",
+      description:
+          "Talaba va shifokorlar biz bilan o’z maqsadlariga erishib kelmoqda !",
     ),
   ];
 
@@ -54,7 +53,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       body: Stack(
         children: [
           PageView.builder(
@@ -130,8 +129,13 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      child: SafeArea(
+      decoration: BoxDecoration(
+
+          image: DecorationImage(image: AssetImage("assets/ic_background.jpg"),
+              opacity: 0.2,
+              fit: BoxFit.cover)
+
+      ),      child: SafeArea(
         child: Column(
           children: [
             SizedBox(
@@ -150,7 +154,7 @@ class OnboardingPage extends StatelessWidget {
                   child: Text(
                     "O'tkazib yuborish",
                     style: TextStyle(
-                      color: Colors.blue,
+                      color: Colors.lightBlue,
                       fontSize: 17,
                     ),
                   ),
@@ -164,6 +168,7 @@ class OnboardingPage extends StatelessWidget {
                   Image.asset(
                     item.image,
                     height: 270,
+
                   ),
                   SizedBox(height: 20),
                   Padding(
@@ -185,7 +190,7 @@ class OnboardingPage extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey,
+                        color: Colors.black,
                       ),
                     ),
                   ),

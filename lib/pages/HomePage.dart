@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
-import 'package:i_med_team/pages/CoursesPage.dart';
 import 'package:i_med_team/pages/MainPage.dart';
 import 'package:i_med_team/pages/RatePage.dart';
 import 'package:i_med_team/pages/SettingsPage.dart';
@@ -189,10 +188,10 @@ class _HomepageState extends State<Homepage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       // appBar: AppBar(
       // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-      appBar: AppBar(
-        centerTitle: true,
-        title: _appBar(_selectedIndex),
-      ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: _appBar(_selectedIndex),
+      // ),
       drawer: Drawer(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0),
@@ -290,7 +289,7 @@ class _HomepageState extends State<Homepage> {
                            'assets/ic_home1.png',
                            height: 22, // Larger size for selected index
                          ),
-                         title: Text('Home'),
+                         title: Text('Asosiy menu'),
                          onTap: () {
                            Navigator.pop(context);
                            setState(() {
@@ -303,7 +302,7 @@ class _HomepageState extends State<Homepage> {
                            'assets/ic_reward.png',
                            height: 22, // Larger size for selected index
                          ),
-                         title: Text('Rating'),
+                         title: Text('Reyting'),
                          onTap: () {
                            Navigator.pop(context);
                            setState(() {
@@ -313,25 +312,39 @@ class _HomepageState extends State<Homepage> {
                        ),
                        ListTile(
                          leading:  Image.asset(
-                           'assets/ic_user.png',
-                           height: 22, // Larger size for selected index
-                         ),
-                         title: Text('Profile'),
-                         onTap: () {
-                           Navigator.pop(context);
-                           setState(() {
-                             _selectedIndex = 2;
-                           });
+                            'assets/learning1.png',
+                            height: 22, // Larger size for selected index
+                          ),
+                          title: Text('Kurslarim'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              _selectedIndex = 2;
+                            });
                          },
                        ),
-                     ],
-                   ),
+                        ListTile(
+                          leading: Image.asset(
+                            'assets/ic_user.png',
+                            height: 22, // Larger size for selected index
+                          ),
+                          title: Text('Profile'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (builder) => SettingsPage()));
+                          },
+                        ),
+                      ],
+                    ),
                     Column(
                       children: [
 
                         ListTile(
-                          leading:  Icon(Icons.settings),
-                          title: Text('Settings'),
+                          leading: Icon(Icons.info),
+                          title: Text('Biz haqimizda'),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(context, MaterialPageRoute(builder: (builder)=>SettingsPage()));
@@ -368,35 +381,36 @@ class _HomepageState extends State<Homepage> {
                   ? 30
                   : 24, // Larger size for selected index
             ),
-            label: 'Home',
+            label: 'Asosiy menu',
           ),
-          // CurvedNavigationBarItem(
-          //   child: Image.asset(
-          //     'assets/learning1.png',
-          //     width: _selectedIndex == 1
-          //         ? 32
-          //         : 30, // Larger size for selected index
-          //   ),
-          //   label: 'Courses',
-          // ),
+
           CurvedNavigationBarItem(
             child: Image.asset(
               'assets/ic_reward.png',
-              height: _selectedIndex == 2
+              height: _selectedIndex == 1
                   ? 30
                   : 25, // Larger size for selected index
             ),
-            label: 'Rating',
+            label: 'Reyting',
           ),
           CurvedNavigationBarItem(
             child: Image.asset(
-              'assets/ic_user.png',
-              height: _selectedIndex == 3
-                  ? 30
-                  : 26, // Larger size for selected index
+              'assets/learning1.png',
+              width: _selectedIndex == 2
+                  ? 32
+                  : 30, // Larger size for selected index
             ),
-            label: 'Profile',
+            label: 'Mening kurslarim',
           ),
+          // CurvedNavigationBarItem(
+          //   child: Image.asset(
+          //     'assets/ic_user.png',
+          //     height: _selectedIndex == 3
+          //         ? 30
+          //         : 26, // Larger size for selected index
+          //   ),
+          //   label: 'Profile',
+          // ),
           // CurvedNavigationBarItem(
           //   child: Icon(Icons.perm_identity),
           //   label: 'Personal',
@@ -434,7 +448,7 @@ class _HomepageState extends State<Homepage> {
             : Colors.white,
         backgroundColor: themeProvider.themeMode == ThemeMode.dark
             ? Colors.grey.shade400
-            : Colors.grey.shade100,
+            : Colors.grey.shade200,
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 600),
         letIndexChange: (index) => true,

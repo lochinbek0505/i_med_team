@@ -23,7 +23,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
-        android:label="iMedTeam"
+        android:label="iMed Team"
         tools:targetApi="honeycomb">
 
         <activity

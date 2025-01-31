@@ -85,7 +85,7 @@ class _ProfessionPageState extends State<ProfessionPage> {
                             SizedBox(
                               width: 20,
                             ),
-                            Text("Men o'quvchiman"),
+                            Text("Men talabaman"),
                           ],
                         ),
                       ),
