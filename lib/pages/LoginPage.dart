@@ -58,9 +58,7 @@ class _LoginPageState extends State<LoginPage> {
       if (success.status == 'success') {
         print("TOKEN TOKEN TOKEN TOKEN TOKEN TOKEN ${success.data.token}");
         saveToken(success.data.token);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login successful')),
-        );
+
         var profile_data = await apiService.profile();
         await saveUserToPreferences(profile_data);
         LoadingDialog.hide_dialog(context);
@@ -79,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         LoadingDialog.hide_dialog(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$success')),
+          SnackBar(content: Text('Xatolik iltimos qaytadan urinib ko\'ring')),
         );
       }
     } catch (e) {

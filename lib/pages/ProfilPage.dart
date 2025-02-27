@@ -759,11 +759,14 @@ class _ProfilePageState extends State<ProfilePage> {
             } else if (!snapshot.hasData || snapshot.data!.dataList!.isEmpty) {
               return const Center(child: Text('No items found.'));
             } else {
-              var courses = snapshot.data!.dataList;
+              var courses = snapshot.data!.dataList!.toList(growable: true);
+              courses = courses.where((dat) => dat.isOpen == true).toList();
 
-              return ListView.builder(
-                  itemCount: courses!.length,
-                  itemBuilder: (context, index) {
+              return courses.isEmpty
+                  ? Center(child: Text("Sizda kurs mavjud emas"))
+                  : ListView.builder(
+                      itemCount: courses!.length,
+                      itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10.0, horizontal: 15),
@@ -852,9 +855,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                           height: 5,
                                         ),
                                         Text(
-                                          "${calculateDateInterval(courses[index].rest!)} kun qoldi",
-                                          style: TextStyle(
-                                            color: Colors.green,
+                                              "${courses[index].rest == null ? "" : calculateDateInterval(courses[index].rest!)} kun qoldi",
+                                              style: TextStyle(
+                                                color: Colors.green,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                           ),

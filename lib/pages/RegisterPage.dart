@@ -284,16 +284,14 @@ class _RegisterPageState extends State<RegisterPage> {
       LoadingDialog.hide_dialog(context);
 
       if (success.status == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Register successful')),
-        );
+
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (builder) => CodeVerificationPage()));
         // Navigator.pop(context);
         // Navigate to another page (e.g., HomePage)
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$success')),
+          SnackBar(content: Text('Xatolik iltimos qaytadan urinib ko\'ring')),
         );
       }
     } catch (e) {
@@ -302,7 +300,7 @@ class _RegisterPageState extends State<RegisterPage> {
       print("IDSKJNSDVBSDIVBDSIOVNDJKKJBVFJKFKVJJBUCYNSVIBUIGFEV<Wecwvtewvbyi");
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+        SnackBar(content: Text('Register failed: $e')),
       );
     } finally {
       setState(() {
