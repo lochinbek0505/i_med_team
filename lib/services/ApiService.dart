@@ -35,7 +35,6 @@ class ApiService {
     return prefs.getString('auth_token');
   }
 
-
   // Register API
   Future<RegisterResponse> register_request(RegisterRequest user) async {
     final url =
@@ -62,14 +61,15 @@ class ApiService {
       throw Exception('Failed to register');
     }
   }
+
   // https://oztech.uz/api/v1/users/generate/
   Future<RegisterResponse> resend_code(String email) async {
     final url =
-    Uri.parse('$baseUrl/users/generate/'); // Adjust the endpoint as needed
+        Uri.parse('$baseUrl/users/generate/'); // Adjust the endpoint as needed
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email":email}),
+      body: jsonEncode({"email": email}),
     );
 
     if (response.statusCode == 200) {
@@ -89,7 +89,7 @@ class ApiService {
 
   Future<RegisterResponse> verfy_code(VerfyModel user) async {
     final url =
-    Uri.parse('$baseUrl/users/verify/'); // Adjust the endpoint as needed
+        Uri.parse('$baseUrl/users/verify/'); // Adjust the endpoint as needed
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -111,14 +111,13 @@ class ApiService {
     }
   }
 
-  Future<RegisterResponse> reset_password(email,password) async {
-    final url =
-    Uri.parse('$baseUrl/users/change/password/'); // Adjust the endpoint as needed
+  Future<RegisterResponse> reset_password(email, password) async {
+    final url = Uri.parse(
+        '$baseUrl/users/change/password/'); // Adjust the endpoint as needed
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email":email,
-      "password":password}),
+      body: jsonEncode({"email": email, "password": password}),
     );
 
     if (response.statusCode == 200) {
@@ -160,6 +159,7 @@ class ApiService {
       throw Exception('Failed to login');
     }
   }
+
 //Courses API main page
   Future<CoursesListModel> course_list() async {
     var token = await getToken();
@@ -184,6 +184,28 @@ class ApiService {
       throw Exception('Failed to get courses');
     }
   }
+
+  Future<void> logout() async {
+    var token = await getToken();
+
+    final url =
+        Uri.parse('$baseUrl/users/logout/'); // Adjust the endpoint as needed
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Assuming the response contains a success message
+    } else {
+      print(response);
+      throw Exception('Failed to get courses');
+    }
+  }
+
 // Subjects API main page
   Future<SubjectModel> subject_list(context) async {
     var token = await getToken();
@@ -203,14 +225,12 @@ class ApiService {
       } else {
         return SubjectModel.fromJson(data);
       }
-    }
-    else if(response.statusCode==401){
+    } else if (response.statusCode == 401) {
       clearSharedPreferences();
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => OnboardingScreen()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => OnboardingScreen()));
       throw Exception("Unauthorized");
-    }
-    else {
+    } else {
       print(response);
       throw Exception('Failed to get courses');
     }
@@ -220,7 +240,8 @@ class ApiService {
   Future<CoursesListModel> subject_course_list(num id) async {
     var token = await getToken();
 
-    final url = Uri.parse('$baseUrl/courses/?subject=$id'); // Adjust the endpoint as needed
+    final url = Uri.parse(
+        '$baseUrl/courses/?subject=$id'); // Adjust the endpoint as needed
     final response = await http.get(
       url,
       headers: {'Authorization': 'Token $token'},
@@ -241,16 +262,17 @@ class ApiService {
     }
   }
 
-
   Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
+
   //Show one course detailes API show course page
   Future<ShowCoursesModel> course_detailes(num id) async {
     var token = await getToken();
 
-    final url = Uri.parse('$baseUrl/courses/$id/'); // Adjust the endpoint as needed
+    final url =
+        Uri.parse('$baseUrl/courses/$id/'); // Adjust the endpoint as needed
     final response = await http.get(
       url,
       headers: {'Authorization': 'Token $token'},
@@ -330,7 +352,7 @@ class ApiService {
 
     final url =
         Uri.parse('$baseUrl/courses/end/'); // Adjust the endpoint as needed
-     final response = await http.post(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
