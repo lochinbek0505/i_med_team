@@ -488,6 +488,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             TextButton(
               onPressed: () {
+                apiService.logout();
                 Navigator.of(context).pop(); // Close the dialog
                 clearSharedPreferences();
                 Navigator.pushAndRemoveUntil(
